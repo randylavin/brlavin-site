@@ -1,238 +1,239 @@
-/* ---------------------------------------------------------
-   Base Page Layout
---------------------------------------------------------- */
-
 body {
   margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f7f7f7;
-  color: #222;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background-image: linear-gradient(to bottom, #1a5ca0, #a42020);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color: #fff;
+}
+
+/* ---------------------- */
+/* TOP BAR (Date | Temp | Time) */
+/* ---------------------- */
+
+.top-bar {
   display: flex;
+  align-items: center;
+  padding: 25px 8vw;
+  color: #f2f2f2;
+  user-select: none;
+}
+
+/* Each section gets equal width */
+#dateDisplay {
+  flex: 1;
+  text-align: left;
+  font-size: 40px;
+  font-weight: 300;
+  opacity: 0.85;
+  letter-spacing: 1px;
+}
+
+#tempDisplay {
+  flex: 1;
+  text-align: center;
+}
+
+#tempDisplay .tempValue {
+  font-size: 46px;
+  font-weight: 300;
+  opacity: 0.88;
+  letter-spacing: 1px;
+}
+
+#tempDisplay .tempLocation {
+  font-size: 22px;
+  font-weight: 300;
+  opacity: 0.75;
+  margin-top: -4px;
+  letter-spacing: 0.5px;
+}
+
+#clock {
+  flex: 1;
+  text-align: right;
+  font-size: 52px;
+  font-weight: 300;
+  opacity: 0.9;
+  letter-spacing: 1px;
+}
+
+/* ---------------------- */
+/* SEARCH BAR */
+/* ---------------------- */
+
+.search-box {
+  text-align: center;
+  margin: 40px auto 20px auto;
+}
+
+.search-form {
+  display: flex;
+  width: 750px;
+  margin: 0 auto;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.search-form input[type="text"] {
+  flex: 4;
+  padding: 12px 48px 12px 40px;
+  font-size: 18px;
+  border: none;
+  outline: none;
+  background-color: #fff;
+  color: #000;
+
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23999" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.48-5.34C15.02 5.59 12.43 3 9.25 3S3.48 5.59 3.48 8.39c0 2.8 2.59 5.39 5.77 5.39 1.61 0 3.07-.66 4.1-1.73l.27.28v.79l4.25 4.25c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L15.5 14z"/></svg>');
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position: 12px center;
+}
+
+.search-button {
+  flex: 1;
+  background-color: #000;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------------------- */
+/* SHORTCUT GRID */
+/* ---------------------- */
+
+.shortcuts {
+  display: flex;
+  justify-content: center;
+  margin: 30px auto;
+  padding: 10px;
   flex-direction: column;
   align-items: center;
 }
 
-/* ---------------------------------------------------------
-   Top Bar (Clock, Date, Weather)
---------------------------------------------------------- */
-
-.top-bar {
-  width: 100%;
-  max-width: 900px;
+.shortcut-grid {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 24px;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-bottom: 2px solid #ddd;
-  margin-bottom: 20px;
-}
-
-.clock {
-  font-size: 2.4rem;
-  font-weight: 600;
-}
-
-.date {
-  font-size: 1.2rem;
-  color: #555;
-}
-
-.weather {
-  text-align: right;
-  font-size: 1.2rem;
-  line-height: 1.3;
-}
-
-.weather .temp {
-  font-size: 1.8rem;
-  font-weight: 600;
-}
-
-.weather .city {
-  font-size: 1rem;
-  color: #666;
-}
-
-/* ---------------------------------------------------------
-   Search Bar
---------------------------------------------------------- */
-
-.search-container {
-  width: 100%;
-  max-width: 900px;
-  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 25px;
+  gap: 20px;
+  align-items: flex-start;
+  position: relative;
+  margin-bottom: 30px;
+  max-width: 1100px;
 }
 
-.search-input {
-  width: 80%;
-  max-width: 600px;
-  padding: 14px 18px;
-  font-size: 1.2rem;
-  border: 2px solid #bbb;
+.shortcut {
+  width: 100px;
+  text-align: center;
+  background: transparent;
+  position: relative;
+}
+
+.shortcut-link {
+  position: relative;
+  display: block;
+  padding: 8px;
   border-radius: 12px;
-  outline: none;
+  transition: background 0.2s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
-.search-input:focus {
-  border-color: #888;
+.shortcut-link:hover {
+  background: #333;
 }
 
-/* ---------------------------------------------------------
-   Icon Grid
---------------------------------------------------------- */
-
-.icon-grid {
-  width: 100%;
-  max-width: 900px;
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 22px;
-  padding: 0 20px 40px 20px;
-  box-sizing: border-box;
-}
-
-.icon {
+.shortcut-icon {
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 50%;
   width: 80px;
   height: 80px;
-  background-color: #ffffff;
-  border-radius: 18px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  cursor: pointer;
-  transition: transform 0.15s ease;
+  justify-content: center;
+  margin: 0 auto;
 }
 
-.icon:hover {
-  transform: scale(1.06);
+.shortcut-icon img {
+  width: 40px;
+  height: 40px;
 }
 
-.icon img {
-  width: 60%;
-  height: 60%;
-  object-fit: contain;
+.shortcut-label {
+  font-size: 20px;
+  color: #fff;
+  margin-top: 8px;
 }
 
-/* ---------------------------------------------------------
-   Modal Windows
---------------------------------------------------------- */
-
-.modal {
+.shortcut-edit-button {
   display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.45);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: #ffffff;
-  padding: 25px;
-  border-radius: 14px;
-  width: 90%;
-  max-width: 420px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  font-size: 1.2rem;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
-.modal-buttons button {
-  padding: 10px 18px;
-  margin-left: 10px;
-  font-size: 1rem;
-  border-radius: 8px;
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.3);
   border: none;
   cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  z-index: 10;
 }
 
-.modal-buttons .save-btn {
-  background-color: #4caf50;
-  color: white;
+.shortcut-edit-button .dot {
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+  margin: 4px auto;
 }
 
-.modal-buttons .cancel-btn {
-  background-color: #ccc;
+.shortcut-link:hover .shortcut-edit-button {
+  display: block;
 }
 
-/* ---------------------------------------------------------
-   Responsive Layouts
---------------------------------------------------------- */
-
-/* iPhone / small screens */
-@media (max-width: 600px) {
-
-  .top-bar {
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
-    padding: 16px;
-  }
-
-  .clock {
-    font-size: 2rem;
-  }
-
-  .date {
-    font-size: 1rem;
-  }
-
-  .weather .temp {
-    font-size: 1.4rem;
-  }
-
-  .weather .city {
-    font-size: 0.9rem;
-  }
-
-  .search-input {
-    width: 90%;
-    font-size: 1.1rem;
-    padding: 12px 16px;
-  }
-
-  .icon-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    padding: 0 10px 30px 10px;
-  }
-
-  .icon {
-    width: 100px;
-    height: 100px;
-  }
-
-  .icon img {
-    width: 65%;
-    height: 65%;
-  }
+.add-shortcut-button {
+  padding: 12px 24px;
+  font-size: 36px;
+  font-weight: bold;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin: 10px 5px;
+  box-shadow: none;
+  transition: transform 0.1s ease;
 }
 
-/* Medium screens (small tablets, older iPads) */
-@media (min-width: 601px) and (max-width: 900px) {
+.add-shortcut-button:hover,
+.add-shortcut-button:focus {
+  background: transparent;
+  transform: scale(1.15);
+}
 
-  .icon-grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
-  }
+/* ---------------------- */
+/* MODALS */
+/* ---------------------- */
 
-  .icon {
-    width: 90px;
-    height: 90px;
-  }
+.modal {
+  font-size: 22px;
+}
+
+.modal input {
+  font-size: 20px;
+  padding: 6px;
+}
+
+.modal button {
+  font-size: 20px;
+  padding: 6px 12px;
+}
+
+.dragging {
+  opacity: 0.5;
+  border: 2px dashed #fff;
 }
