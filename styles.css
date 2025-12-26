@@ -105,7 +105,7 @@ body {
 #searchButton img {
   width: 48px;
   height: 48px;
-  filter: brightness(0) invert(1); /* makes icon white */
+  filter: brightness(0) invert(1);
 }
 
 
@@ -122,7 +122,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 40px;
   align-items: flex-start;
   max-width: 1100px;
 }
@@ -155,12 +155,12 @@ body {
 }
 
 .shortcut-icon img {
-  width: 40px;
-  height: 40px;
+  width: 55px;
+  height: 55px;
 }
 
 .shortcut-label {
-  font-size: 20px;
+  font-size: 25px;
   color: #fff;
   margin-top: 8px;
 }
@@ -256,10 +256,9 @@ border-radius: 40px;
 }
 
 #bottomBar #doneButton {
-  width: 100%;          /* fill the same inner width as the icons */
-  margin: 0;            /* remove extra vertical spacing */
-  padding: 14px 0;      /* keep the button height consistent */
-  /* background: transparent; let the bottomBar background show */
+  width: 100%;
+  margin: 0;
+  padding: 14px 0;
 }
 
  #bottomBar:has(#doneButton) {

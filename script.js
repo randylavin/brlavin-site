@@ -104,15 +104,7 @@ function loadShortcuts() {
   } else {
     shortcuts = [
       { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com" },
-      { name: "Amtrak", url: "https://www.amtrak.com/track-your-train.html", icon: "https://www.google.com/s2/favicons?sz=128&domain=amtrak.com" },
-      { name: "Bubble Shooter", url: "https://www.bubbleshooter.net/", icon: "https://www.google.com/s2/favicons?sz=128&domain=bubbleshooter.net" },
       { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com" },
-      { name: "E-Bay", url: "https://www.ebay.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=ebay.com" },
-      { name: "East Rise", url: "https://www.eastrise.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=eastrise.com" },
-      { name: "Escape Games", url: "https://www.crazygames.com/t/escape", icon: "https://www.google.com/s2/favicons?sz=128&domain=crazygames.com" },
-      { name: "NCFCU", url: "https://www.northcountry.org/", icon: "https://www.google.com/s2/favicons?sz=128&domain=northcountry.org" },
-      { name: "Rob's Shares", url: "https://onedrive.live.com/?authkey=%21AvSZMVUefKbWWBA&id=root&cid=B0F830816A5AE0B8&qt=sharedby", icon: "https://www.google.com/s2/favicons?sz=128&domain=onedrive.live.com" },
-      { name: "Sudoku", url: "https://sudoku.game/", icon: "https://www.google.com/s2/favicons?sz=128&domain=sudoku.game" },
       { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com" }
     ];
     saveShortcuts();
