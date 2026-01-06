@@ -77,7 +77,6 @@ body {
 }
 
 .temp-value {
-  font-size: var(--font-xlarge);
   font-weight: bold;
 }
 
@@ -96,7 +95,7 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: var(--space-6);
+  margin-top: var(--space-7);
 }
 
 .search-bar {
@@ -104,7 +103,7 @@ body {
   align-items: center;
   background: #ffffff;
   border-radius: var(--radius-pill);
-  width: min(900px, 85%);
+  width: min(1100px, 85%);
   height: 64px;
   overflow: hidden;
 }
@@ -240,7 +239,7 @@ body {
   display: flex;
   justify-content: center;
   gap: var(--space-6);
-  padding: var(--space-2);
+  padding: var(--space-5);
   background: var(--surface);
   border-radius: var(--radius-pill);
   width: min(400px, 90%);
