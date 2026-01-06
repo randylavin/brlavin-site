@@ -266,7 +266,8 @@ function renderShortcuts() {
     `;
 
     wrapper.addEventListener('click', () => {
-      window.location.href = item.url;
+      // window.location.href = item.url; //
+      window.open(item.url, "_blank");
     });
 
     wrapper.addEventListener('contextmenu', (e) => {
@@ -526,3 +527,4 @@ function initialize() {
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
+
