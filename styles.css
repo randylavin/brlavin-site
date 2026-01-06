@@ -1,139 +1,100 @@
-/* -------------------------------------------------- */
-/* GLOBAL LAYOUT & THEME */
-/* -------------------------------------------------- */
-
-:root {
-  /* Color palette */
-  --bg-gradient-top: #1f2a44;
-  --bg-gradient-bottom: #3a4f6b;
-
-  --surface: rgba(255, 255, 255, 0.1);
-  --surface-strong: rgba(255, 255, 255, 0.2);
-
-  --text-light: #ffffff;
-  --text-dim: rgba(255, 255, 255, 0.75);
-
-  --accent: #4cc3ff;
-  --danger: #e74c3c;
-
-  /* Sizing scale */
-  --radius-small: 6px;
-  --radius-medium: 12px;
-  --radius-large: 24px;
-  --radius-pill: 999px;
-
-  /* Spacing scale */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
-
-  /* Typography */
-  --font-small: 16px;
-  --font-medium: 20px;
-  --font-large: 28px;
-  --font-xlarge: 36px;
-}
-
 body {
   margin: 0;
-  font-family: system-ui, Arial, sans-serif;
-  color: var(--text-light);
-  background: linear-gradient(to bottom, var(--bg-gradient-top), var(--bg-gradient-bottom));
+  font-family: Arial, sans-serif;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  background-image: linear-gradient(to bottom, #1a5ca0, #a42020);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color: #fff;
 }
 
 
 
-/* -------------------------------------------------- */
-/* TOP BAR */
-/* -------------------------------------------------- */
-
-.top-bar {
+#topBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-5) var(--space-6);
-  font-size: var(--font-xlarge);
+  width: 90%;
+  margin: 20px auto 0 auto;
 }
 
-.top-bar__item {
+.topItem {
   flex: 1;
+  text-align: center;
+  font-size: 32px;
+  color: #f0f0f0;
+}
+
+#dateDisplay {
+  text-align: left;
+  padding-left: 20px;
+}
+
+#clock {
+  text-align: right;
+  padding-right: 20px;
+}
+
+#tempDisplay {
   text-align: center;
 }
 
-.top-bar__date {
-  text-align: left;
-}
-
-.top-bar__clock {
-  text-align: right;
-}
-
-.temp-value {
-  font-size: var(--font-xlarge);
+.tempValue {
+  font-size: 32px;
   font-weight: bold;
+  color: #f0f0f0;
 }
 
-.temp-location {
-  font-size: var(--font-medium);
-  color: var(--text-dim);
+.tempLocation {
+  font-size: 20px;
+  opacity: 0.8;
+  color: #f0f0f0;
 }
 
 
 
-/* -------------------------------------------------- */
-/* SEARCH BAR */
-/* -------------------------------------------------- */
-
-.search-section {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-6);
+#searchContainer {
+  margin: 90px auto;
+  width: 80%;
 }
 
-.search-bar {
+.search-bar-wrapper {
   display: flex;
   align-items: center;
-  background: #ffffff;
-  border-radius: var(--radius-pill);
-  width: min(900px, 85%);
-  height: 64px;
+  background: white;
+  border-radius: 40px;
   overflow: hidden;
+  height: 64px;
 }
 
-.search-bar__icon-left {
-  padding-left: var(--space-4);
+.search-icon-left {
+  padding-left: 20px;
   display: flex;
   align-items: center;
+  background: white;
+  height: 100%;
 }
 
-.search-bar__icon-left img {
+.search-icon-left img {
   width: 24px;
   height: 24px;
   opacity: 0.5;
 }
 
-.search-bar__input {
+#searchBar {
   flex: 1;
+  padding: 18px;
+  font-size: 28px;
   border: none;
   outline: none;
-  font-size: var(--font-large);
-  padding: var(--space-4);
   color: #333;
+  background: white;
 }
 
-.search-bar__button {
-  background: var(--accent);
+#searchButton {
+  width: 10%;
+  background: #000;
   border: none;
-  width: 80px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -141,47 +102,52 @@ body {
   cursor: pointer;
 }
 
-.search-bar__button img {
-  width: 32px;
-  height: 32px;
+#searchButton img {
+  width: 48px;
+  height: 48px;
   filter: brightness(0) invert(1);
 }
 
 
-
-/* -------------------------------------------------- */
-/* SHORTCUT GRID */
-/* -------------------------------------------------- */
-
-.shortcuts-section {
+.shortcuts {
   display: flex;
   justify-content: center;
-  margin-top: var(--space-7);
+  margin: 90px auto;
+  padding: 10px;
+  flex-direction: column;
+  align-items: center;
 }
 
 .shortcut-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: var(--space-6);
-  width: min(1700px, 90%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  align-items: flex-start;
+  max-width: 1100px;
 }
 
 .shortcut {
+  width: 100px;
   text-align: center;
+  background: transparent;
   position: relative;
 }
 
 .shortcut-link {
   display: block;
+  padding: 8px;
+  border-radius: 12px;
   text-decoration: none;
-  color: var(--text-light);
+  color: inherit;
 }
 
 .shortcut-icon {
-  width: 90px;
-  height: 90px;
-  background: #ffffff;
+  background: #fff;
+  border: 1px solid #000;
   border-radius: 50%;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -189,28 +155,84 @@ body {
 }
 
 .shortcut-icon img {
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 55px;
 }
 
 .shortcut-label {
-  margin-top: var(--space-2);
-  font-size: var(--font-medium);
+  font-size: 25px;
+  color: #fff;
+  margin-top: 8px;
 }
 
+/* BOTTOM BAR */
+#bottomBar {
+  display: flex;
+  justify-content: space-between;
+  width: 480px;
+  margin: 90px auto;
 
+background: rgba(0, 0, 0, 0.25); 
+padding: 0px 20px;
+border-radius: 40px;
+}
 
-/* -------------------------------------------------- */
-/* EDIT & DELETE BADGES */
-/* -------------------------------------------------- */
+/* BUTTONS: remove white squares, center icons */
+.add-shortcut-button,
+.edit-shortcut-button,
+.delete-shortcut-button {
+  width: 96px;
+  height: 96px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-.edit-pencil,
+/* ICONS: consistent size, no padding distortion */
+.add-shortcut-button svg,
+.edit-shortcut-button svg,
+.delete-shortcut-button svg {
+  width: 64px;
+  height: 64px;
+}
+
+/* HOVER EFFECT */
+.add-shortcut-button:hover,
+.edit-shortcut-button:hover,
+.delete-shortcut-button:hover {
+  transform: scale(1.15);
+}
+
+/* DELETE MODE X */
 .delete-x {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 32px;
-  height: 32px;
+  top: -2px;
+  right: -2px;
+  background: red;
+  color: white;
+  font-weight: bold;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* EDIT MODE PENCIL OVERLAY */
+.edit-pencil {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
+  background: #2ecc71;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -219,162 +241,62 @@ body {
   z-index: 10;
 }
 
-.edit-pencil {
-  background: #2ecc71;
-}
 
-.delete-x {
-  background: var(--danger);
-  font-size: var(--font-medium);
-  font-weight: bold;
-}
-
-
-
-/* -------------------------------------------------- */
-/* BOTTOM BAR */
-/* -------------------------------------------------- */
-
-.bottom-bar {
-  margin-top: auto;
-  display: flex;
-  justify-content: center;
-  gap: var(--space-6);
-  padding: var(--space-2);
-  background: var(--surface);
-  border-radius: var(--radius-pill);
-  width: min(400px, 90%);
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: var(--space-5);
-}
-
-.bottom-button {
-  width: 90px;
-  height: 90px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bottom-button svg {
-  width: 56px;
-  height: 56px;
-  transition: transform 0.15s ease;
-}
-
-.bottom-button:hover svg {
-  transform: scale(1.12);
-}
-
-
-
-/* DONE BUTTON (edit/delete mode) */
+/* DONE BUTTON */
 #doneButton {
-  width: 100%;
-  padding: var(--space-4) 0;
-  font-size: var(--font-large);
-  border-radius: var(--radius-pill);
-  border: none;
-  background: var(--accent);
-  color: #000;
+  display: block;
+  margin: 30px auto;
+  padding: 14px 40px;
+  font-size: 26px;
+  border-radius: 40px;
+  background: #111;
+  color: white;
+  border: 2px solid #555;
   cursor: pointer;
 }
 
-
-
-/* -------------------------------------------------- */
-/* SPINNER */
-/* -------------------------------------------------- */
-
-.spinner {
-  width: 28px;
-  height: 28px;
-  border: 4px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
+#bottomBar #doneButton {
+  width: 100%;
+  margin: 0;
+  padding: 14px 0;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+ #bottomBar:has(#doneButton) {
+  background: none;
+  padding: 0;
 }
 
 
-
-/* -------------------------------------------------- */
 /* MODALS */
-/* -------------------------------------------------- */
-
 .modal-backdrop {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 9998;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9998;
 }
 
 .modal {
-  background: #ffffff;
+  font-size: 22px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
   color: #000;
-  padding: var(--space-5);
-  border-radius: var(--radius-medium);
-  width: min(360px, 90%);
-  font-size: var(--font-medium);
+  width: 300px;
   z-index: 9999;
 }
 
-.modal h3 {
-  margin-top: 0;
-  margin-bottom: var(--space-4);
-  font-size: var(--font-large);
-}
-
-.modal label {
-  font-weight: bold;
-  margin-bottom: var(--space-2);
-  display: block;
-}
-
 .modal input {
-  width: 100%;
-  padding: var(--space-3);
-  font-size: var(--font-medium);
-  border: 2px solid #ccc;
-  border-radius: var(--radius-small);
-  margin-bottom: var(--space-4);
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--space-3);
+  font-size: 20px;
+  padding: 6px;
 }
 
 .modal button {
-  padding: var(--space-3) var(--space-5);
-  font-size: var(--font-medium);
-  border: none;
-  border-radius: var(--radius-small);
-  background: #333;
-  color: #fff;
-  cursor: pointer;
-}
-
-.modal button:hover {
-  background: #555;
-}
-
-.modal button.danger {
-  background: var(--danger);
-}
-
-.modal button.danger:hover {
-  background: #ff6b5a;
+  font-size: 20px;
+  padding: 6px 12px;
 }
