@@ -1,88 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="UTF-8">
   <title>Shortcuts</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-  <!-- HEADER: Date • Temp • Clock -->
-  <header class="top-bar">
-    <div id="dateDisplay" class="top-bar__item top-bar__date"></div>
+  <!-- TOP BAR -->
+  <div id="topBar">
+    <div id="dateDisplay" class="topItem"></div>
 
-    <div id="tempDisplay" class="top-bar__item top-bar__temp" aria-live="polite">
-      <div class="temp-value">--°F</div>
-      <div class="temp-location">Local Temp</div>
+    <div id="tempDisplay" class="topItem">
+      <div class="tempValue">--°F</div>
+      <div class="tempLocation">Local Temp</div>
     </div>
 
-    <div id="clock" class="top-bar__item top-bar__clock"></div>
-  </header>
+    <div id="clock" class="topItem"></div>
+  </div>
 
-  <!-- MAIN CONTENT -->
-  <main>
+  <!-- SEARCH BAR -->
+  <div id="searchContainer">
+    <div class="search-bar-wrapper">
 
-    <!-- SEARCH BAR -->
-    <section class="search-section">
-      <div class="search-bar">
-
-        <span class="search-bar__icon-left" aria-hidden="true">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg"
-            alt=""
-          />
-        </span>
-
-        <input
-          id="searchBar"
-          type="text"
-          class="search-bar__input"
-          placeholder="Search Google..."
-          aria-label="Search Google"
+      <div class="search-icon-left">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg"
+          alt="Search"
         />
-
-        <button id="searchButton" class="search-bar__button" aria-label="Search">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg"
-            alt=""
-          />
-        </button>
-
       </div>
-    </section>
 
-    <!-- SHORTCUT GRID -->
-    <section class="shortcuts-section">
-      <div id="shortcutContainer" class="shortcut-grid"></div>
-    </section>
+      <input id="searchBar" type="text" placeholder="Search Google...">
 
-  </main>
+      <button id="searchButton">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg"
+          alt="Go"
+        />
+      </button>
 
-  <!-- FOOTER: Bottom Bar -->
-  <footer class="bottom-bar" id="bottomBar">
+    </div>
+  </div>
 
-    <!-- Default buttons (JS will replace when in edit/delete mode) -->
-    <button class="bottom-button add-button" aria-label="Add Shortcut" onclick="openNewShortcutModal()">
+  <!-- SHORTCUT GRID -->
+  <div class="shortcuts">
+    <div id="shortcutContainer" class="shortcut-grid"></div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div id="bottomBar">
+
+    <!-- ADD SHORTCUT BUTTON -->
+    <button class="add-shortcut-button" onclick="openNewShortcutModal()">
       <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
+        <path
+          fill="#ffffff"
+          d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"
+        />
       </svg>
     </button>
 
-    <button class="bottom-button edit-button" aria-label="Edit Shortcuts" onclick="enterEditMode()">
+    <!-- EDIT SHORTCUT BUTTON -->
+    <button class="edit-shortcut-button" onclick="enterEditMode()">
       <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        <path
+          fill="#ffffff"
+          d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+        />
       </svg>
     </button>
 
-    <button class="bottom-button delete-button" aria-label="Delete Shortcuts" onclick="enterDeleteMode()">
+    <!-- DELETE SHORTCUT BUTTON -->
+    <button class="delete-shortcut-button" onclick="enterDeleteMode()">
       <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v9h2v-9H8zm4 0v9h2v-9h-2zM9 4V2h6v2h5v2H4V4h5z"/>
+        <path
+          fill="#ffffff"
+          d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v9h2v-9H8zm4 0v9h2v-9h-2zM9 4V2h6v2h5v2H4V4h5z"
+        />
       </svg>
     </button>
 
-  </footer>
+  </div>
 
   <script src="script.js"></script>
 </body>
