@@ -5,6 +5,7 @@
 const STORAGE_KEY = 'customShortcuts';
 let shortcuts = [];
 let mode = 'normal'; // "normal" | "edit" | "delete"
+let activeCategory = 'All';
 
 
 
@@ -91,9 +92,9 @@ function loadShortcuts() {
 
   if (!shortcuts || shortcuts.length === 0) {
     shortcuts = [
-      { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com" },
-      { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com" },
-      { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com" }
+      { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com", category: "Shopping" },
+      { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com", category: "AI" },
+      { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com", category: "Entertainment" }
     ];
     saveShortcuts();
   }
@@ -156,21 +157,27 @@ function buildFaviconUrl(domain) {
 // GENERIC SAVE HANDLER FOR SHORTCUTS
 // --------------------------------------------------
 
-function saveShortcutFromInputs(index, titleInputId, urlInputId) {
+function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId) {
   const nameInput = document.getElementById(titleInputId);
   const urlInput = document.getElementById(urlInputId);
+  const categoryInput = document.getElementById(categoryInputId);
 
-  if (!nameInput || !urlInput) {
+  if (!nameInput || !urlInput || !categoryInput) {
     alert("Something went wrong — the input fields weren't found.");
     return;
   }
 
   const name = nameInput.value.trim();
   const rawUrl = urlInput.value.trim();
+  let category = categoryInput.value.trim();
 
   if (!name || !rawUrl) {
     alert("Please enter both a Title and a URL.");
     return;
+  }
+
+  if (!category) {
+    category = "General";
   }
 
   const result = validateAndPrepareUrl(rawUrl);
@@ -183,17 +190,57 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId) {
   const icon = buildFaviconUrl(domain);
 
   if (index === null || index === undefined) {
-    shortcuts.push({ name, url, icon });
+    shortcuts.push({ name, url, icon, category });
   } else {
     shortcuts[index].name = name;
     shortcuts[index].url = url;
     shortcuts[index].icon = icon;
+    shortcuts[index].category = category;
   }
 
   sortShortcuts();
   saveShortcuts();
+  
+  // If we just edited a shortcut and changed its category away from the active filter,
+  // or deleted the last item in a category, we need to re-verify the active category.
+  const uniqueCategories = [...new Set(shortcuts.map(s => s.category))];
+  if (activeCategory !== 'All' && !uniqueCategories.includes(activeCategory)) {
+    activeCategory = 'All';
+  }
+
+  renderCategoryPills();
   renderShortcuts();
   closeAllModals();
+}
+
+
+
+// --------------------------------------------------
+// RENDER CATEGORY PILLS
+// --------------------------------------------------
+
+function renderCategoryPills() {
+  const nav = document.getElementById('categoryNav');
+  if (!nav) return;
+
+  const uniqueCategories = [...new Set(shortcuts.map(s => s.category))].sort((a, b) => 
+    a.toLowerCase().localeCompare(b.toLowerCase())
+  );
+  
+  const allCategories = ['All', ...uniqueCategories];
+
+  nav.innerHTML = '';
+  allCategories.forEach(cat => {
+    const pill = document.createElement('button');
+    pill.className = `category-pill ${activeCategory === cat ? 'active' : ''}`;
+    pill.textContent = cat;
+    pill.onclick = () => {
+      activeCategory = cat;
+      renderCategoryPills();
+      renderShortcuts();
+    };
+    nav.appendChild(pill);
+  });
 }
 
 
@@ -208,7 +255,15 @@ function renderShortcuts() {
 
   container.innerHTML = '';
 
-  shortcuts.forEach((item, index) => {
+  const filteredShortcuts = activeCategory === 'All' 
+    ? shortcuts 
+    : shortcuts.filter(s => s.category === activeCategory);
+
+  // We need the original index for editing/deleting purposes
+  shortcuts.forEach((item, originalIndex) => {
+    // Skip if it doesn't match current filter
+    if (activeCategory !== 'All' && item.category !== activeCategory) return;
+
     const wrapper = document.createElement('div');
     wrapper.className = 'shortcut';
 
@@ -228,7 +283,7 @@ function renderShortcuts() {
         </a>
       `;
 
-      wrapper.addEventListener('click', () => openEditIconModal(index));
+      wrapper.addEventListener('click', () => openEditIconModal(originalIndex));
       container.appendChild(wrapper);
       return;
     }
@@ -248,7 +303,7 @@ function renderShortcuts() {
       const deleteBadge = wrapper.querySelector('.delete-x');
       deleteBadge.addEventListener('click', (e) => {
         e.stopPropagation();
-        confirmDelete(index);
+        confirmDelete(originalIndex);
       });
 
       container.appendChild(wrapper);
@@ -266,13 +321,12 @@ function renderShortcuts() {
     `;
 
     wrapper.addEventListener('click', () => {
-      // window.location.href = item.url; //
       window.open(item.url, "_blank");
     });
 
     wrapper.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      openEditModal(index);
+      openEditModal(originalIndex);
     });
 
     container.appendChild(wrapper);
@@ -358,7 +412,17 @@ function confirmDelete(index) {
 }
 
 function performDelete(index) {
+  const deletedCategory = shortcuts[index].category;
   deleteShortcut(index);
+  
+  // Clean up empty category
+  const remainingInCategory = shortcuts.filter(s => s.category === deletedCategory);
+  if (remainingInCategory.length === 0 && activeCategory === deletedCategory) {
+    activeCategory = 'All';
+  }
+  
+  renderCategoryPills();
+  renderShortcuts();
   closeAllModals();
 }
 
@@ -366,7 +430,6 @@ function deleteShortcut(index) {
   shortcuts.splice(index, 1);
   sortShortcuts();
   saveShortcuts();
-  renderShortcuts();
 }
 
 
@@ -384,16 +447,25 @@ function createModalShell() {
 
   const backdrop = document.createElement('div');
   backdrop.className = 'modal-backdrop';
-  backdrop.addEventListener('click', () => backdrop.remove());
+  backdrop.addEventListener('mousedown', () => backdrop.remove());
 
   const modal = document.createElement('div');
   modal.className = 'modal';
-  modal.addEventListener('click', e => e.stopPropagation());
+  modal.addEventListener('mousedown', e => e.stopPropagation());
 
   backdrop.appendChild(modal);
   document.body.appendChild(backdrop);
 
   return { backdrop, modal };
+}
+
+function getCategoryDataList() {
+  const uniqueCategories = [...new Set(shortcuts.map(s => s.category))].sort();
+  let options = '';
+  uniqueCategories.forEach(cat => {
+    options += `<option value="${cat}">`;
+  });
+  return `<datalist id="categoryList">${options}</datalist>`;
 }
 
 
@@ -412,6 +484,9 @@ function openEditIconModal(index) {
     <input type="text" id="editIconTitle" value="${item.name}">
     <label>URL:</label>
     <input type="text" id="editIconURL" value="${item.url}">
+    <label>Category:</label>
+    <input type="text" id="editIconCategory" value="${item.category || ''}" list="categoryList">
+    ${getCategoryDataList()}
     <div class="modal-buttons">
       <button onclick="saveEditIcon(${index})">Save</button>
       <button onclick="closeAllModals()">Cancel</button>
@@ -429,11 +504,26 @@ function openEditModal(index) {
     <input type="text" id="editTitle" value="${item.name}">
     <label>URL:</label>
     <input type="text" id="editURL" value="${item.url}">
+    <label>Category:</label>
+    <input type="text" id="editCategory" value="${item.category || ''}" list="categoryList">
+    ${getCategoryDataList()}
     <div class="modal-buttons">
       <button onclick="saveEdit(${index})">Save</button>
-      <button onclick="deleteShortcut(${index})" class="danger">Delete</button>
+      <button onclick="deleteShortcutAndRefresh(${index})" class="danger">Delete</button>
     </div>
   `;
+}
+
+function deleteShortcutAndRefresh(index) {
+  const deletedCategory = shortcuts[index].category;
+  deleteShortcut(index);
+  const remainingInCategory = shortcuts.filter(s => s.category === deletedCategory);
+  if (remainingInCategory.length === 0 && activeCategory === deletedCategory) {
+    activeCategory = 'All';
+  }
+  renderCategoryPills();
+  renderShortcuts();
+  closeAllModals();
 }
 
 
@@ -451,6 +541,9 @@ function openNewShortcutModal() {
     <input type="text" id="newTitle">
     <label>URL:</label>
     <input type="text" id="newURL">
+    <label>Category:</label>
+    <input type="text" id="newCategory" placeholder="e.g. Games, Finance" list="categoryList">
+    ${getCategoryDataList()}
     <div class="modal-buttons">
       <button onclick="saveNewShortcut()">Save</button>
       <button onclick="closeAllModals()">Cancel</button>
@@ -465,15 +558,15 @@ function openNewShortcutModal() {
 // --------------------------------------------------
 
 function saveNewShortcut() {
-  saveShortcutFromInputs(null, 'newTitle', 'newURL');
+  saveShortcutFromInputs(null, 'newTitle', 'newURL', 'newCategory');
 }
 
 function saveEdit(index) {
-  saveShortcutFromInputs(index, 'editTitle', 'editURL');
+  saveShortcutFromInputs(index, 'editTitle', 'editURL', 'editCategory');
 }
 
 function saveEditIcon(index) {
-  saveShortcutFromInputs(index, 'editIconTitle', 'editIconURL');
+  saveShortcutFromInputs(index, 'editIconTitle', 'editIconURL', 'editIconCategory');
 }
 
 
@@ -521,10 +614,10 @@ function initialize() {
   setInterval(updateTemperature, 600000);
 
   loadShortcuts();
+  renderCategoryPills();
   renderShortcuts();
   renderBottomBar();
   setupSearchHandlers();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
-

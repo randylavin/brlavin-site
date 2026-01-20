@@ -9,32 +9,20 @@
 
 <body>
 
-  <!-- HEADER: Date • Temp • Clock -->
   <header class="top-bar">
-    <div id="dateDisplay" class="top-bar__item top-bar__date"></div>
-
-    <div id="tempDisplay" class="top-bar__item top-bar__temp" aria-live="polite">
-      <div class="temp-value">--°F</div>
-      <div class="temp-location">Local Temp</div>
+    <div class="top-bar__left-group">
+      <div id="dateDisplay" class="top-bar__date"></div>
+      <div id="clock" class="top-bar__clock"></div>
     </div>
 
-    <div id="clock" class="top-bar__item top-bar__clock"></div>
-  </header>
-
-  <!-- MAIN CONTENT -->
-  <main>
-
-    <!-- SEARCH BAR -->
     <section class="search-section">
       <div class="search-bar">
-
         <span class="search-bar__icon-left" aria-hidden="true">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg"
             alt=""
           />
         </span>
-
         <input
           id="searchBar"
           type="text"
@@ -42,46 +30,45 @@
           placeholder="Search Google..."
           aria-label="Search Google"
         />
-
         <button id="searchButton" class="search-bar__button" aria-label="Search">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg"
             alt=""
           />
         </button>
-
       </div>
     </section>
 
-    <!-- SHORTCUT GRID -->
+    <div id="tempDisplay" class="top-bar__item top-bar__temp" aria-live="polite">
+      <div class="temp-value">--°F</div>
+      <div class="temp-location">Local Temp</div>
+    </div>
+  </header>
+
+  <nav id="categoryNav" class="category-nav"></nav>
+
+  <main>
     <section class="shortcuts-section">
       <div id="shortcutContainer" class="shortcut-grid"></div>
     </section>
-
   </main>
 
-  <!-- FOOTER: Bottom Bar -->
   <footer class="bottom-bar" id="bottomBar">
-
-    <!-- Default buttons (JS will replace when in edit/delete mode) -->
     <button class="bottom-button add-button" aria-label="Add Shortcut" onclick="openNewShortcutModal()">
       <svg viewBox="0 0 24 24">
         <path fill="#ffffff" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
       </svg>
     </button>
-
     <button class="bottom-button edit-button" aria-label="Edit Shortcuts" onclick="enterEditMode()">
       <svg viewBox="0 0 24 24">
         <path fill="#ffffff" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
       </svg>
     </button>
-
     <button class="bottom-button delete-button" aria-label="Delete Shortcuts" onclick="enterDeleteMode()">
       <svg viewBox="0 0 24 24">
         <path fill="#ffffff" d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v9h2v-9H8zm4 0v9h2v-9h-2zM9 4V2h6v2h5v2H4V4h5z"/>
       </svg>
     </button>
-
   </footer>
 
   <script src="script.js"></script>
