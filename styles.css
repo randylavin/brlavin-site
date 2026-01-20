@@ -352,7 +352,7 @@ body {
   color: #000;
   padding: var(--space-5);
   border-radius: var(--radius-medium);
-  width: min(360px, 90%);
+  width: min(600px, 90%);
   font-size: var(--font-medium);
   z-index: 9999;
 }
@@ -371,6 +371,7 @@ body {
 
 .modal input {
   width: 100%;
+  box-sizing: border-box;
   padding: var(--space-3);
   font-size: var(--font-medium);
   border: 2px solid #ccc;

@@ -176,10 +176,6 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId
     return;
   }
 
-  if (!category) {
-    category = "General";
-  }
-
   const result = validateAndPrepareUrl(rawUrl);
   if (!result.success) {
     alert(result.message);
@@ -201,13 +197,6 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId
   sortShortcuts();
   saveShortcuts();
   
-  // If we just edited a shortcut and changed its category away from the active filter,
-  // or deleted the last item in a category, we need to re-verify the active category.
-  const uniqueCategories = [...new Set(shortcuts.map(s => s.category))];
-  if (activeCategory !== 'All' && !uniqueCategories.includes(activeCategory)) {
-    activeCategory = 'All';
-  }
-
   renderCategoryPills();
   renderShortcuts();
   closeAllModals();
@@ -223,9 +212,14 @@ function renderCategoryPills() {
   const nav = document.getElementById('categoryNav');
   if (!nav) return;
 
-  const uniqueCategories = [...new Set(shortcuts.map(s => s.category))].sort((a, b) => 
-    a.toLowerCase().localeCompare(b.toLowerCase())
-  );
+  const uniqueCategories = [...new Set(shortcuts.map(s => s.category))].sort((a, b) => {
+    // If a is empty and b is not, a comes last
+    if (!a && b) return 1;
+    // If b is empty and a is not, b comes last
+    if (a && !b) return -1;
+    // Otherwise, normal alphabetical sort
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
   
   const allCategories = ['All', ...uniqueCategories];
 
@@ -412,15 +406,7 @@ function confirmDelete(index) {
 }
 
 function performDelete(index) {
-  const deletedCategory = shortcuts[index].category;
   deleteShortcut(index);
-  
-  // Clean up empty category
-  const remainingInCategory = shortcuts.filter(s => s.category === deletedCategory);
-  if (remainingInCategory.length === 0 && activeCategory === deletedCategory) {
-    activeCategory = 'All';
-  }
-  
   renderCategoryPills();
   renderShortcuts();
   closeAllModals();
@@ -515,12 +501,7 @@ function openEditModal(index) {
 }
 
 function deleteShortcutAndRefresh(index) {
-  const deletedCategory = shortcuts[index].category;
   deleteShortcut(index);
-  const remainingInCategory = shortcuts.filter(s => s.category === deletedCategory);
-  if (remainingInCategory.length === 0 && activeCategory === deletedCategory) {
-    activeCategory = 'All';
-  }
   renderCategoryPills();
   renderShortcuts();
   closeAllModals();
