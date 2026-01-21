@@ -191,6 +191,7 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId
     shortcuts[index].url = url;
     shortcuts[index].icon = icon;
     shortcuts[index].category = category;
+    // Preservation of clicks happens here as we only update specific fields
   }
 
   saveShortcuts();
@@ -255,20 +256,21 @@ function renderShortcuts() {
     itemsToRender = itemsToRender.filter(s => s.category === activeCategory);
   }
 
-  itemsToRender.sort((a, b) => {
-    if (currentSortMode === 'freq') {
+  if (currentSortMode === 'freq') {
+    itemsToRender.sort((a, b) => {
       if (b.clicks !== a.clicks) {
         return (b.clicks || 0) - (a.clicks || 0);
       }
-    }
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
+      return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+    });
+  } else {
+    itemsToRender.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  }
 
   itemsToRender.forEach((item) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'shortcut';
 
-    // Click counter badge (testing only, shown in freq mode)
     const badgeHtml = currentSortMode === 'freq' 
       ? `<div class="click-badge">${item.clicks || 0}</div>` 
       : '';
