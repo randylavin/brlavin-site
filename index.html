@@ -47,6 +47,23 @@
 
   <nav id="categoryNav" class="category-nav"></nav>
 
+<div class="sort-controls">
+  <span class="sort-header">SORT ICONS BY:</span>
+
+  <label class="sort-label">
+    <input type="radio" name="sortMode" value="alpha" checked
+           onchange="handleSortChange('alpha')">
+    Name
+  </label>
+
+  <label class="sort-label">
+    <input type="radio" name="sortMode" value="freq"
+           onchange="handleSortChange('freq')">
+    Frequency
+  </label>
+</div>
+
+
   <main>
     <section class="shortcuts-section">
       <div id="shortcutContainer" class="shortcut-grid"></div>

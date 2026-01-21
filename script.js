@@ -6,6 +6,7 @@ const STORAGE_KEY = 'customShortcuts';
 let shortcuts = [];
 let mode = 'normal'; // "normal" | "edit" | "delete"
 let activeCategory = 'All';
+let currentSortMode = 'alpha'; // "alpha" | "freq"
 
 
 
@@ -76,7 +77,7 @@ function updateTemperature() {
 
 
 // --------------------------------------------------
-// STORAGE: LOAD, SAVE, SORT
+// STORAGE: LOAD, SAVE
 // --------------------------------------------------
 
 function loadShortcuts() {
@@ -92,22 +93,20 @@ function loadShortcuts() {
 
   if (!shortcuts || shortcuts.length === 0) {
     shortcuts = [
-      { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com", category: "Shopping" },
-      { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com", category: "AI" },
-      { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com", category: "Entertainment" }
+      { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com", category: "Shopping", clicks: 0 },
+      { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com", category: "AI", clicks: 0 },
+      { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com", category: "Entertainment", clicks: 0 }
     ];
     saveShortcuts();
   }
 
-  sortShortcuts();
+  shortcuts.forEach(s => {
+    if (typeof s.clicks !== 'number') s.clicks = 0;
+  });
 }
 
 function saveShortcuts() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(shortcuts));
-}
-
-function sortShortcuts() {
-  shortcuts.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 }
 
 
@@ -186,7 +185,7 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId
   const icon = buildFaviconUrl(domain);
 
   if (index === null || index === undefined) {
-    shortcuts.push({ name, url, icon, category });
+    shortcuts.push({ name, url, icon, category, clicks: 0 });
   } else {
     shortcuts[index].name = name;
     shortcuts[index].url = url;
@@ -194,7 +193,6 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId
     shortcuts[index].category = category;
   }
 
-  sortShortcuts();
   saveShortcuts();
   
   renderCategoryPills();
@@ -213,11 +211,8 @@ function renderCategoryPills() {
   if (!nav) return;
 
   const uniqueCategories = [...new Set(shortcuts.map(s => s.category))].sort((a, b) => {
-    // If a is empty and b is not, a comes last
     if (!a && b) return 1;
-    // If b is empty and a is not, b comes last
     if (a && !b) return -1;
-    // Otherwise, normal alphabetical sort
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
   
@@ -243,25 +238,41 @@ function renderCategoryPills() {
 // RENDER SHORTCUTS
 // --------------------------------------------------
 
+function handleSortChange(val) {
+  currentSortMode = val;
+  renderShortcuts();
+}
+
 function renderShortcuts() {
   const container = document.getElementById('shortcutContainer');
   if (!container) return;
 
   container.innerHTML = '';
 
-  const filteredShortcuts = activeCategory === 'All' 
-    ? shortcuts 
-    : shortcuts.filter(s => s.category === activeCategory);
+  let itemsToRender = shortcuts.map((item, idx) => ({ ...item, originalIndex: idx }));
 
-  // We need the original index for editing/deleting purposes
-  shortcuts.forEach((item, originalIndex) => {
-    // Skip if it doesn't match current filter
-    if (activeCategory !== 'All' && item.category !== activeCategory) return;
+  if (activeCategory !== 'All') {
+    itemsToRender = itemsToRender.filter(s => s.category === activeCategory);
+  }
 
+  itemsToRender.sort((a, b) => {
+    if (currentSortMode === 'freq') {
+      if (b.clicks !== a.clicks) {
+        return (b.clicks || 0) - (a.clicks || 0);
+      }
+    }
+    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+  });
+
+  itemsToRender.forEach((item) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'shortcut';
 
-    // EDIT MODE
+    // Click counter badge (testing only, shown in freq mode)
+    const badgeHtml = currentSortMode === 'freq' 
+      ? `<div class="click-badge">${item.clicks || 0}</div>` 
+      : '';
+
     if (mode === 'edit') {
       wrapper.innerHTML = `
         <div class="edit-pencil">
@@ -272,23 +283,24 @@ function renderShortcuts() {
         <a class="shortcut-link" href="javascript:void(0);">
           <div class="shortcut-icon">
             <img src="${item.icon}" alt="${item.name}">
+            ${badgeHtml}
           </div>
           <div class="shortcut-label">${item.name}</div>
         </a>
       `;
 
-      wrapper.addEventListener('click', () => openEditIconModal(originalIndex));
+      wrapper.addEventListener('click', () => openEditIconModal(item.originalIndex));
       container.appendChild(wrapper);
       return;
     }
 
-    // DELETE MODE
     if (mode === 'delete') {
       wrapper.innerHTML = `
         <div class="delete-x">X</div>
         <a class="shortcut-link" href="javascript:void(0);">
           <div class="shortcut-icon">
             <img src="${item.icon}" alt="${item.name}">
+            ${badgeHtml}
           </div>
           <div class="shortcut-label">${item.name}</div>
         </a>
@@ -297,30 +309,37 @@ function renderShortcuts() {
       const deleteBadge = wrapper.querySelector('.delete-x');
       deleteBadge.addEventListener('click', (e) => {
         e.stopPropagation();
-        confirmDelete(originalIndex);
+        confirmDelete(item.originalIndex);
       });
 
       container.appendChild(wrapper);
       return;
     }
 
-    // NORMAL MODE
     wrapper.innerHTML = `
       <a class="shortcut-link" href="javascript:void(0);">
         <div class="shortcut-icon">
           <img src="${item.icon}" alt="${item.name}">
+          ${badgeHtml}
         </div>
         <div class="shortcut-label">${item.name}</div>
       </a>
     `;
 
     wrapper.addEventListener('click', () => {
+      const liveItem = shortcuts[item.originalIndex];
+      liveItem.clicks = (liveItem.clicks || 0) + 1;
+      saveShortcuts();
+      
+      if (currentSortMode === 'freq') {
+        renderShortcuts();
+      }
       window.open(item.url, "_blank");
     });
 
     wrapper.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      openEditModal(originalIndex);
+      openEditModal(item.originalIndex);
     });
 
     container.appendChild(wrapper);
@@ -414,7 +433,6 @@ function performDelete(index) {
 
 function deleteShortcut(index) {
   shortcuts.splice(index, 1);
-  sortShortcuts();
   saveShortcuts();
 }
 

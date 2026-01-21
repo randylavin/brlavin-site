@@ -3,26 +3,18 @@
 /* -------------------------------------------------- */
 
 :root {
-  /* Color palette */
   --bg-gradient-top: #1f2a44;
   --bg-gradient-bottom: #3a4f6b;
-
   --surface: rgba(255, 255, 255, 0.1);
   --surface-strong: rgba(255, 255, 255, 0.2);
-
   --text-light: #ffffff;
   --text-dim: rgba(255, 255, 255, 0.75);
-
   --accent: #4cc3ff;
   --danger: #e74c3c;
-
-  /* Sizing scale */
   --radius-small: 6px;
   --radius-medium: 12px;
   --radius-large: 24px;
   --radius-pill: 999px;
-
-  /* Spacing scale */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -31,8 +23,6 @@
   --space-6: 32px;
   --space-7: 48px;
   --space-8: 64px;
-
-  /* Typography */
   --font-small: 16px;
   --font-medium: 20px;
   --font-large: 28px;
@@ -67,20 +57,13 @@ body {
   align-items: center;
 }
 
-.top-bar__item {
-  text-align: center;
-}
-
-.top-bar__date {
-  text-align: center;
-}
-
-.top-bar__clock {
+.top-bar__date, .top-bar__clock {
   text-align: center;
 }
 
 .top-bar__temp {
   text-align: center;
+  font-size: var(--font-xlarge);
 }
 
 .temp-value {
@@ -88,7 +71,7 @@ body {
 }
 
 .temp-location {
-  font-size: var(--font-medium);
+  font-size: inherit;
   color: var(--text-dim);
 }
 
@@ -100,7 +83,6 @@ body {
   display: flex;
   justify-content: center;
   flex: 1;
-  /* SURGICAL ADDITION: Centers the search bar vertically against the date/temp groups */
   align-self: center;
 }
 
@@ -187,7 +169,37 @@ body {
 }
 
 /* -------------------------------------------------- */
-/* SHORTCUT GRID */
+/* SORT CONTROLS */
+/* -------------------------------------------------- */
+
+.sort-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-3);
+  font-size: var(--font-small);
+  color: var(--text-dim);
+}
+
+.sort-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sort-label:hover {
+  color: var(--text-light);
+}
+
+.sort-label input {
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* -------------------------------------------------- */
+/* SHORTCUT GRID & BADGES */
 /* -------------------------------------------------- */
 
 .shortcuts-section {
@@ -223,11 +235,32 @@ body {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+  position: relative; /* Needed for badge positioning */
 }
 
 .shortcut-icon img {
   width: 60px;
   height: 60px;
+}
+
+.click-badge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  background: var(--accent);
+  color: #000;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  z-index: 5;
 }
 
 .shortcut-label {
@@ -239,8 +272,7 @@ body {
 /* EDIT & DELETE BADGES */
 /* -------------------------------------------------- */
 
-.edit-pencil,
-.delete-x {
+.edit-pencil, .delete-x {
   position: absolute;
   top: -6px;
   right: -6px;
@@ -254,15 +286,8 @@ body {
   z-index: 10;
 }
 
-.edit-pencil {
-  background: #2ecc71;
-}
-
-.delete-x {
-  background: var(--danger);
-  font-size: var(--font-medium);
-  font-weight: bold;
-}
+.edit-pencil { background: #2ecc71; }
+.delete-x { background: var(--danger); font-size: var(--font-medium); font-weight: bold; }
 
 /* -------------------------------------------------- */
 /* BOTTOM BAR */
@@ -299,11 +324,8 @@ body {
   transition: transform 0.15s ease;
 }
 
-.bottom-button:hover svg {
-  transform: scale(1.12);
-}
+.bottom-button:hover svg { transform: scale(1.12); }
 
-/* DONE BUTTON (edit/delete mode) */
 #doneButton {
   width: 100%;
   padding: var(--space-4) 0;
@@ -316,7 +338,7 @@ body {
 }
 
 /* -------------------------------------------------- */
-/* SPINNER */
+/* SPINNER & MODALS */
 /* -------------------------------------------------- */
 
 .spinner {
@@ -329,13 +351,7 @@ body {
   margin: 0 auto;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* -------------------------------------------------- */
-/* MODALS */
-/* -------------------------------------------------- */
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .modal-backdrop {
   position: fixed;
@@ -357,18 +373,8 @@ body {
   z-index: 9999;
 }
 
-.modal h3 {
-  margin-top: 0;
-  margin-bottom: var(--space-4);
-  font-size: var(--font-large);
-}
-
-.modal label {
-  font-weight: bold;
-  margin-bottom: var(--space-2);
-  display: block;
-}
-
+.modal h3 { margin-top: 0; margin-bottom: var(--space-4); font-size: var(--font-large); }
+.modal label { font-weight: bold; margin-bottom: var(--space-2); display: block; }
 .modal input {
   width: 100%;
   box-sizing: border-box;
@@ -379,12 +385,7 @@ body {
   margin-bottom: var(--space-4);
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--space-3);
-}
-
+.modal-buttons { display: flex; justify-content: space-between; margin-top: var(--space-3); }
 .modal button {
   padding: var(--space-3) var(--space-5);
   font-size: var(--font-medium);
@@ -395,14 +396,6 @@ body {
   cursor: pointer;
 }
 
-.modal button:hover {
-  background: #555;
-}
-
-.modal button.danger {
-  background: var(--danger);
-}
-
-.modal button.danger:hover {
-  background: #ff6b5a;
-}
+.modal button:hover { background: #555; }
+.modal button.danger { background: var(--danger); }
+.modal button.danger:hover { background: #ff6b5a; }
