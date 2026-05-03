@@ -399,3 +399,32 @@ body {
 .modal button:hover { background: #555; }
 .modal button.danger { background: var(--danger); }
 .modal button.danger:hover { background: #ff6b5a; }
+
+/* FLOATING NEW TAB BUTTON */
+.new-tab-floater {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  transition: opacity 0.2s ease;
+  padding: 0;
+}
+
+.new-tab-floater svg {
+  width: 24px;
+  height: 24px;
+  fill: #ffffff;
+  opacity: 0.35;
+}
+
+.new-tab-floater:hover svg {
+  opacity: 0.8;
+}
