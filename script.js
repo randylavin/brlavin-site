@@ -211,7 +211,8 @@ function renderCategoryPills() {
   const nav = document.getElementById('categoryNav');
   if (!nav) return;
 
-  const uniqueCategories = [...new Set(shortcuts.map(s => s.category))].sort((a, b) => {
+  const uniqueCategories = [...new Set(shortcuts.map(s => s.category || ''))].sort((a, b) => {
+    // Keep sorting logic the same: empty strings sort to the very end of the list.
     if (!a && b) return 1;
     if (a && !b) return -1;
     return a.toLowerCase().localeCompare(b.toLowerCase());
