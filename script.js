@@ -586,7 +586,8 @@ function setupSearchHandlers() {
   function runSearch() {
     const query = searchBar.value.trim();
     if (query) {
-      window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      //window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      window.location.href = `https://www.startpage.com/sp/search?query=${encodeURIComponent(query)}`;
     }
   }
 
