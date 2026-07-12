@@ -91,14 +91,42 @@ function loadShortcuts() {
     }
   }
 
-  if (!shortcuts || shortcuts.length === 0) {
-    shortcuts = [
-      { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com", category: "Shopping", clicks: 0 },
-      { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com", category: "AI", clicks: 0 },
-      { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com", category: "Entertainment", clicks: 0 }
-    ];
-    saveShortcuts();
-  }
+if (!shortcuts || shortcuts.length === 0) {
+  shortcuts = [
+    { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com", category: "Shopping", clicks: 0 },
+    { name: "Amtrak", url: "https://www.amtrak.com/track-your-train", icon: "https://www.google.com/s2/favicons?sz=128&domain=amtrak.com", category: "Daily / Utility", clicks: 0 },
+    { name: "Bank of America", url: "https://www.bankofamerica.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=bankofamerica.com", category: "Financial", clicks: 0 },
+    { name: "Bubble Shooter", url: "https://www.bubbleshooter.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=bubbleshooter.com", category: "Fun", clicks: 0 },
+    { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com", category: "Tech", clicks: 0 },
+    { name: "E-Bay", url: "https://www.ebay.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=ebay.com", category: "Shopping", clicks: 0 },
+    { name: "East Rise", url: "https://www.eastrise.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=eastrise.com", category: "Financial", clicks: 0 },
+    { name: "Escape Room Games", url: "https://onlineescaperoom.org/", icon: "https://www.google.com/s2/favicons?sz=128&domain=onlineescaperoom.org", category: "Fun", clicks: 0 },
+    { name: "Free Tax USA", url: "https://www.freetaxusa.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=freetaxusa.com", category: "Financial", clicks: 0 },
+    { name: "Front Porch Forum", url: "https://frontporchforum.com/eastmontpelier/forum", icon: "https://www.google.com/s2/favicons?sz=128&domain=frontporchforum.com", category: "Daily / Utility", clicks: 0 },
+    { name: "Gemini", url: "https://gemini.google.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=gemini.google.com", category: "Tech", clicks: 0 },
+    { name: "GitHub", url: "https://github.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=github.com", category: "Tech", clicks: 0 },
+    { name: "Gmail - Bev", url: "https://mail.google.com/mail/u/1/#inbox", icon: "https://www.google.com/s2/favicons?sz=128&domain=mail.google.com", category: "Personal", clicks: 0 },
+    { name: "Gmail - Randy", url: "https://mail.google.com/mail/u/0/", icon: "https://www.google.com/s2/favicons?sz=128&domain=mail.google.com", category: "Personal", clicks: 0 },
+    { name: "GoDaddy", url: "https://www.godaddy.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=godaddy.com", category: "Tech", clicks: 0 },
+    { name: "Google Account - Randy", url: "https://myaccount.google.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=google.com", category: "Personal", clicks: 0 },
+    { name: "MakerWorld", url: "https://makerworld.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=makerworld.com", category: "3D", clicks: 0 },
+    { name: "MyChart (UVM)", url: "https://mychart.uvmhealth.org/", icon: "https://www.google.com/s2/favicons?sz=128&domain=uvmhealth.org", category: "Medical", clicks: 0 },
+    { name: "NCFCU", url: "https://www.northcountry.org/", icon: "https://www.google.com/s2/favicons?sz=128&domain=northcountry.org", category: "Financial", clicks: 0 },
+    { name: "Rob's Shares", url: "https://onedrive.live.com/?redeem=aHR0cHM6Ly8xZHJ2Lm1zL2YvcyFCRG45aTNQc2J6Q3p3MnIwbVRGVkhueW0xbGdRP2U9azhseTlObTFra082WDFxMWFKOS1ndyZhdD05&id=B3306FEC738BFD39%218682&cid=B3306FEC738BFD39", icon: "https://www.google.com/s2/favicons?sz=128&domain=onedrive.live.com", category: "Personal", clicks: 0 },
+    { name: "Sudoku", url: "https://sudoku.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=sudoku.com", category: "Fun", clicks: 0 },
+    { name: "ThingAVerse", url: "https://www.thingiverse.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=thingiverse.com", category: "3D", clicks: 0 },
+    { name: "Walmart", url: "https://www.walmart.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=walmart.com", category: "Shopping", clicks: 0 },
+    { name: "Weather 05651", url: "https://www.wunderground.com/weather/us/vt/east-montpelier/05651", icon: "https://www.google.com/s2/favicons?sz=128&domain=wunderground.com", category: "Daily / Utility", clicks: 0 },
+    { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com", category: "Fun", clicks: 0 }
+  ];
+  saveShortcuts();
+}
+  
+  shortcuts.forEach(s => {
+    if (typeof s.clicks !== 'number') s.clicks = 0;
+  });
+}
+
 
   shortcuts.forEach(s => {
     if (typeof s.clicks !== 'number') s.clicks = 0;
