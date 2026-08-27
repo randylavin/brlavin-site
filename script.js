@@ -1,14 +1,21 @@
 // --------------------------------------------------
+// SUPABASE CONFIGURATION
+// --------------------------------------------------
+
+const SUPABASE_URL = 'https://xkxqyfximbjxzvwvnfhu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_5CCKiszWrvKr1qOMvX...'; // Your Supabase publishable key
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// --------------------------------------------------
 // STATE
 // --------------------------------------------------
 
-const STORAGE_KEY = 'customShortcuts';
+const USER_STORAGE_KEY = 'dashboardActiveUser';
+let activeUser = localStorage.getItem(USER_STORAGE_KEY) || ''; // Starts blank if no user selected yet
 let shortcuts = [];
 let mode = 'normal'; // "normal" | "edit" | "delete"
 let activeCategory = 'All';
 let currentSortMode = 'alpha'; // "alpha" | "freq"
-
-
 
 // --------------------------------------------------
 // CLOCK, DATE, TEMPERATURE
@@ -74,64 +81,122 @@ function updateTemperature() {
     });
 }
 
-
-
 // --------------------------------------------------
-// STORAGE: LOAD, SAVE
+// USER PROFILE MANAGEMENT
 // --------------------------------------------------
 
-function loadShortcuts() {
-  const saved = localStorage.getItem(STORAGE_KEY);
+function initializeUserDropdown() {
+  const selectEl = document.getElementById('userProfileSelect');
+  if (selectEl) {
+    selectEl.value = activeUser;
+  }
+}
 
-  if (saved) {
-    try {
-      shortcuts = JSON.parse(saved) || [];
-    } catch {
-      shortcuts = [];
+async function handleUserChange(newUserName) {
+  activeUser = newUserName;
+  if (activeUser) {
+    localStorage.setItem(USER_STORAGE_KEY, activeUser);
+  } else {
+    localStorage.removeItem(USER_STORAGE_KEY);
+  }
+  exitModes();
+  await loadShortcuts();
+  renderCategoryPills();
+  renderShortcuts();
+  renderBottomBar();
+}
+
+// --------------------------------------------------
+// STORAGE: LOAD, SAVE, SYNC WITH SUPABASE
+// --------------------------------------------------
+
+async function loadShortcuts() {
+  shortcuts = [];
+  if (!activeUser) return; // If no user selected yet, show nothing
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('shortcuts')
+      .select('*')
+      .eq('user_profile', activeUser);
+
+    if (error) {
+      console.error('Error loading shortcuts from Supabase:', error);
+      return;
     }
+
+    shortcuts = data || [];
+  } catch (err) {
+    console.error('Unexpected error loading shortcuts:', err);
   }
 
-  if (!shortcuts || shortcuts.length === 0) {
-    shortcuts = [
-      { name: "Amazon", url: "https://www.amazon.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=amazon.com", category: "Shopping", clicks: 0 },
-      { name: "Amtrak", url: "https://www.amtrak.com/track-your-train", icon: "https://www.google.com/s2/favicons?sz=128&domain=amtrak.com", category: "Daily / Utility", clicks: 0 },
-      { name: "Bank of America", url: "https://www.bankofamerica.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=bankofamerica.com", category: "Financial", clicks: 0 },
-      { name: "Bubble Shooter", url: "https://www.bubbleshooter.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=bubbleshooter.com", category: "Fun", clicks: 0 },
-      { name: "Co-Pilot", url: "https://copilot.microsoft.com/chats/G2Ujy9vDzVNegQ4U5ZnSm", icon: "https://www.google.com/s2/favicons?sz=128&domain=copilot.microsoft.com", category: "Tech", clicks: 0 },
-      { name: "E-Bay", url: "https://www.ebay.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=ebay.com", category: "Shopping", clicks: 0 },
-      { name: "East Rise", url: "https://www.eastrise.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=eastrise.com", category: "Financial", clicks: 0 },
-      { name: "Escape Room Games", url: "https://onlineescaperoom.org/", icon: "https://www.google.com/s2/favicons?sz=128&domain=onlineescaperoom.org", category: "Fun", clicks: 0 },
-      { name: "Free Tax USA", url: "https://www.freetaxusa.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=freetaxusa.com", category: "Financial", clicks: 0 },
-      { name: "Front Porch Forum", url: "https://frontporchforum.com/eastmontpelier/forum", icon: "https://www.google.com/s2/favicons?sz=128&domain=frontporchforum.com", category: "Daily / Utility", clicks: 0 },
-      { name: "Gemini", url: "https://gemini.google.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=gemini.google.com", category: "Tech", clicks: 0 },
-      { name: "GitHub", url: "https://github.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=github.com", category: "Tech", clicks: 0 },
-      { name: "Gmail - Bev", url: "https://mail.google.com/mail/u/1/#inbox", icon: "https://www.google.com/s2/favicons?sz=128&domain=mail.google.com", category: "Personal", clicks: 0 },
-      { name: "Gmail - Randy", url: "https://mail.google.com/mail/u/0/", icon: "https://www.google.com/s2/favicons?sz=128&domain=mail.google.com", category: "Personal", clicks: 0 },
-      { name: "GoDaddy", url: "https://www.godaddy.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=godaddy.com", category: "Tech", clicks: 0 },
-      { name: "Google Account - Randy", url: "https://myaccount.google.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=google.com", category: "Personal", clicks: 0 },
-      { name: "MakerWorld", url: "https://makerworld.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=makerworld.com", category: "3D", clicks: 0 },
-      { name: "MyChart (UVM)", url: "https://mychart.uvmhealth.org/", icon: "https://www.google.com/s2/favicons?sz=128&domain=uvmhealth.org", category: "Medical", clicks: 0 },
-      { name: "NCFCU", url: "https://www.northcountry.org/", icon: "https://www.google.com/s2/favicons?sz=128&domain=northcountry.org", category: "Financial", clicks: 0 },
-      { name: "Rob's Shares", url: "https://onedrive.live.com/?redeem=aHR0cHM6Ly8xZHJ2Lm1zL2YvcyFCRG45aTNQc2J6Q3p3MnIwbVRGVkhueW0xbGdRP2U9azhseTlObTFra082WDFxMWFKOS1ndyZhdD05&id=B3306FEC738BFD39%218682&cid=B3306FEC738BFD39", icon: "https://www.google.com/s2/favicons?sz=128&domain=onedrive.live.com", category: "Personal", clicks: 0 },
-      { name: "Sudoku", url: "https://sudoku.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=sudoku.com", category: "Fun", clicks: 0 },
-      { name: "ThingAVerse", url: "https://www.thingiverse.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=thingiverse.com", category: "3D", clicks: 0 },
-      { name: "Walmart", url: "https://www.walmart.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=walmart.com", category: "Shopping", clicks: 0 },
-      { name: "Weather 05651", url: "https://www.wunderground.com/weather/us/vt/east-montpelier/05651", icon: "https://www.google.com/s2/favicons?sz=128&domain=wunderground.com", category: "Daily / Utility", clicks: 0 },
-      { name: "YouTube", url: "https://www.youtube.com/", icon: "https://www.google.com/s2/favicons?sz=128&domain=youtube.com", category: "Fun", clicks: 0 }
-    ];
-    saveShortcuts();
-  }
-  
   shortcuts.forEach(s => {
     if (typeof s.clicks !== 'number') s.clicks = 0;
   });
 }
 
-function saveShortcuts() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(shortcuts));
+async function saveNewShortcutToDb(shortcutObj) {
+  if (!activeUser) return;
+  const payload = { ...shortcutObj, user_profile: activeUser };
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('shortcuts')
+      .insert([payload])
+      .select();
+
+    if (error) {
+      console.error('Error saving shortcut:', error);
+      alert('Failed to save shortcut to cloud.');
+      return;
+    }
+
+    if (data && data.length > 0) {
+      shortcuts.push(data[0]);
+    }
+  } catch (err) {
+    console.error('Unexpected error saving shortcut:', err);
+  }
 }
 
+async function updateShortcutInDb(index, updatedFields) {
+  const item = shortcuts[index];
+  if (!item || !item.id) return;
 
+  try {
+    const { error } = await supabaseClient
+      .from('shortcuts')
+      .update(updatedFields)
+      .eq('id', item.id);
+
+    if (error) {
+      console.error('Error updating shortcut:', error);
+    }
+  } catch (err) {
+    console.error('Unexpected error updating shortcut:', err);
+  }
+}
+
+async function deleteShortcutFromDb(index) {
+  const item = shortcuts[index];
+  if (!item || !item.id) return;
+
+  try {
+    const { error } = await supabaseClient
+      .from('shortcuts')
+      .delete()
+      .eq('id', item.id);
+
+    if (error) {
+      console.error('Error deleting shortcut:', error);
+      return;
+    }
+  } catch (err) {
+    console.error('Unexpected error deleting shortcut:', err);
+  }
+
+  shortcuts.splice(index, 1);
+}
 
 // --------------------------------------------------
 // URL VALIDATION & FAVICON
@@ -172,13 +237,16 @@ function buildFaviconUrl(domain) {
   return `https://www.google.com/s2/favicons?sz=128&domain=${domain}`;
 }
 
-
-
 // --------------------------------------------------
 // GENERIC SAVE HANDLER FOR SHORTCUTS
 // --------------------------------------------------
 
-function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId) {
+async function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId) {
+  if (!activeUser) {
+    alert("Please select your user profile first.");
+    return;
+  }
+
   const nameInput = document.getElementById(titleInputId);
   const urlInput = document.getElementById(urlInputId);
   const categoryInput = document.getElementById(categoryInputId);
@@ -207,22 +275,19 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId
   const icon = buildFaviconUrl(domain);
 
   if (index === null || index === undefined) {
-    shortcuts.push({ name, url, icon, category, clicks: 0 });
+    await saveNewShortcutToDb({ name, url, icon, category, clicks: 0 });
   } else {
     shortcuts[index].name = name;
     shortcuts[index].url = url;
     shortcuts[index].icon = icon;
     shortcuts[index].category = category;
+    await updateShortcutInDb(index, { name, url, icon, category });
   }
 
-  saveShortcuts();
-  
   renderCategoryPills();
   renderShortcuts();
   closeAllModals();
 }
-
-
 
 // --------------------------------------------------
 // RENDER CATEGORY PILLS
@@ -231,6 +296,11 @@ function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId
 function renderCategoryPills() {
   const nav = document.getElementById('categoryNav');
   if (!nav) return;
+
+  if (!activeUser) {
+    nav.innerHTML = '';
+    return;
+  }
 
   const uniqueCategories = [...new Set(shortcuts.map(s => s.category || ''))].sort((a, b) => {
     if (!a && b) return 1;
@@ -254,8 +324,6 @@ function renderCategoryPills() {
   });
 }
 
-
-
 // --------------------------------------------------
 // RENDER SHORTCUTS
 // --------------------------------------------------
@@ -270,6 +338,8 @@ function renderShortcuts() {
   if (!container) return;
 
   container.innerHTML = '';
+
+  if (!activeUser) return; // Do not render anything if user is not selected
 
   let itemsToRender = shortcuts.map((item, idx) => ({ ...item, originalIndex: idx }));
 
@@ -349,10 +419,10 @@ function renderShortcuts() {
       </a>
     `;
 
-    wrapper.addEventListener('click', () => {
+    wrapper.addEventListener('click', async () => {
       const liveItem = shortcuts[item.originalIndex];
       liveItem.clicks = (liveItem.clicks || 0) + 1;
-      saveShortcuts();
+      await updateShortcutInDb(item.originalIndex, { clicks: liveItem.clicks });
       
       if (currentSortMode === 'freq') {
         renderShortcuts();
@@ -362,14 +432,12 @@ function renderShortcuts() {
 
     wrapper.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      openEditModal(item.originalIndex);
+      openEditOrShareModal(item.originalIndex);
     });
 
     container.appendChild(wrapper);
   });
 }
-
-
 
 // --------------------------------------------------
 // BOTTOM BAR
@@ -378,6 +446,11 @@ function renderShortcuts() {
 function renderBottomBar() {
   const bar = document.getElementById('bottomBar');
   if (!bar) return;
+
+  if (!activeUser) {
+    bar.innerHTML = ''; // Hide buttons if no profile selected
+    return;
+  }
 
   if (mode === 'edit' || mode === 'delete') {
     bar.innerHTML = `<button id="doneButton" onclick="exitModes()">DONE</button>`;
@@ -403,8 +476,6 @@ function renderBottomBar() {
   `;
 }
 
-
-
 // --------------------------------------------------
 // MODE CONTROL
 // --------------------------------------------------
@@ -427,8 +498,6 @@ function exitModes() {
   renderBottomBar();
 }
 
-
-
 // --------------------------------------------------
 // DELETE CONFIRMATION
 // --------------------------------------------------
@@ -447,19 +516,12 @@ function confirmDelete(index) {
   `;
 }
 
-function performDelete(index) {
-  deleteShortcut(index);
+async function performDelete(index) {
+  await deleteShortcutFromDb(index);
   renderCategoryPills();
   renderShortcuts();
   closeAllModals();
 }
-
-function deleteShortcut(index) {
-  shortcuts.splice(index, 1);
-  saveShortcuts();
-}
-
-
 
 // --------------------------------------------------
 // MODAL HELPERS
@@ -495,10 +557,8 @@ function getCategoryDataList() {
   return `<datalist id="categoryList">${options}</datalist>`;
 }
 
-
-
 // --------------------------------------------------
-// EDIT MODALS
+// EDIT & SHARE MODALS
 // --------------------------------------------------
 
 function openEditIconModal(index) {
@@ -521,9 +581,24 @@ function openEditIconModal(index) {
   `;
 }
 
-function openEditModal(index) {
+function openEditOrShareModal(index) {
   const item = shortcuts[index];
   const { modal } = createModalShell();
+
+  let shareOptionsHtml = '';
+  const otherUsers = ['Randy', 'Rob', 'Bev'].filter(u => u !== activeUser);
+  
+  if (otherUsers.length > 0) {
+    let buttons = '';
+    otherUsers.forEach(targetUser => {
+      buttons += `<button onclick="copyShortcutToUser(${index}, '${targetUser}')" style="margin-right: 8px; background: #2980b9;">Copy to ${targetUser}</button>`;
+    });
+    shareOptionsHtml = `
+      <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+      <label>Share / Copy to another user's stash:</label>
+      <div style="margin-top: 8px;">${buttons}</div>
+    `;
+  }
 
   modal.innerHTML = `
     <h3>Edit Shortcut</h3>
@@ -538,17 +613,46 @@ function openEditModal(index) {
       <button onclick="saveEdit(${index})">Save</button>
       <button onclick="deleteShortcutAndRefresh(${index})" class="danger">Delete</button>
     </div>
+    ${shareOptionsHtml}
   `;
 }
 
-function deleteShortcutAndRefresh(index) {
-  deleteShortcut(index);
+async function copyShortcutToUser(index, targetUser) {
+  const item = shortcuts[index];
+  if (!item) return;
+
+  const newShortcut = {
+    name: item.name,
+    url: item.url,
+    icon: item.icon,
+    category: item.category,
+    clicks: 0,
+    user_profile: targetUser
+  };
+
+  try {
+    const { error } = await supabaseClient
+      .from('shortcuts')
+      .insert([newShortcut]);
+
+    if (error) {
+      console.error('Error copying shortcut:', error);
+      alert('Failed to copy shortcut.');
+      return;
+    }
+    alert(`Successfully copied "${item.name}" to ${targetUser}'s stash!`);
+    closeAllModals();
+  } catch (err) {
+    console.error('Unexpected error copying shortcut:', err);
+  }
+}
+
+async function deleteShortcutAndRefresh(index) {
+  await deleteShortcutFromDb(index);
   renderCategoryPills();
   renderShortcuts();
   closeAllModals();
 }
-
-
 
 // --------------------------------------------------
 // NEW SHORTCUT MODAL
@@ -573,8 +677,6 @@ function openNewShortcutModal() {
   `;
 }
 
-
-
 // --------------------------------------------------
 // PUBLIC SAVE WRAPPERS
 // --------------------------------------------------
@@ -590,8 +692,6 @@ function saveEdit(index) {
 function saveEditIcon(index) {
   saveShortcutFromInputs(index, 'editIconTitle', 'editIconURL', 'editIconCategory');
 }
-
-
 
 // --------------------------------------------------
 // GOOGLE SEARCH HANDLERS
@@ -619,13 +719,11 @@ function setupSearchHandlers() {
   });
 }
 
-
-
 // --------------------------------------------------
 // INITIALIZE
 // --------------------------------------------------
 
-function initialize() {
+async function initialize() {
   updateClock();
   setInterval(updateClock, 1000);
 
@@ -635,11 +733,16 @@ function initialize() {
   updateTemperature();
   setInterval(updateTemperature, 600000);
 
-  loadShortcuts();
+  initializeUserDropdown();
+  setupSearchHandlers();
+
+  if (activeUser) {
+    await loadShortcuts();
+  }
+  
   renderCategoryPills();
   renderShortcuts();
   renderBottomBar();
-  setupSearchHandlers();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

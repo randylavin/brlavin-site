@@ -235,7 +235,7 @@ body {
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  position: relative; /* Needed for badge positioning */
+  position: relative;
 }
 
 .shortcut-icon img {
@@ -290,7 +290,7 @@ body {
 .delete-x { background: var(--danger); font-size: var(--font-medium); font-weight: bold; }
 
 /* -------------------------------------------------- */
-/* BOTTOM BAR */
+/* BOTTOM BAR & USER PROFILE BAR */
 /* -------------------------------------------------- */
 
 .bottom-bar {
@@ -304,7 +304,33 @@ body {
   width: min(400px, 90%);
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: var(--space-3);
+}
+
+.user-profile-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
   margin-bottom: var(--space-5);
+  font-size: var(--font-small);
+  color: var(--text-dim);
+}
+
+.user-profile-bar select {
+  background: var(--surface);
+  color: var(--text-light);
+  border: 1px solid var(--surface-strong);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-small);
+  cursor: pointer;
+  outline: none;
+}
+
+.user-profile-bar select option {
+  background: #1f2a44;
+  color: #fff;
 }
 
 .bottom-button {

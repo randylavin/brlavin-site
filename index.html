@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Shortcuts</title>
   <link rel="stylesheet" href="styles.css" />
+  <!-- Supabase JS Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -71,22 +73,19 @@
   </main>
 
   <footer class="bottom-bar" id="bottomBar">
-    <button class="bottom-button add-button" aria-label="Add Shortcut" onclick="openNewShortcutModal()">
-      <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
-      </svg>
-    </button>
-    <button class="bottom-button edit-button" aria-label="Edit Shortcuts" onclick="enterEditMode()">
-      <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-      </svg>
-    </button>
-    <button class="bottom-button delete-button" aria-label="Delete Shortcuts" onclick="enterDeleteMode()">
-      <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v9h2v-9H8zm4 0v9h2v-9h-2zM9 4V2h6v2h5v2H4V4h5z"/>
-      </svg>
-    </button>
+    <!-- Action buttons injected dynamically when user is selected -->
   </footer>
+
+  <!-- User Profile Selector Bar -->
+  <div class="user-profile-bar">
+    <label for="userProfileSelect">Active User:</label>
+    <select id="userProfileSelect" onchange="handleUserChange(this.value)">
+      <option value="">-- Select Profile --</option>
+      <option value="Randy">Randy</option>
+      <option value="Rob">Rob</option>
+      <option value="Bev">Bev</option>
+    </select>
+  </div>
 
   <script src="script.js"></script>
 
