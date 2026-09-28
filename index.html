@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Shortcuts</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="style.css" />
   <!-- Supabase JS Client Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -49,32 +49,27 @@
 
   <nav id="categoryNav" class="category-nav"></nav>
 
-<div class="sort-controls">
-  <span class="sort-header">SORT ICONS BY:</span>
+  <div class="sort-controls">
+    <span class="sort-header">SORT ICONS BY:</span>
 
-  <label class="sort-label">
-    <input type="radio" name="sortMode" value="alpha" checked
-           onchange="handleSortChange('alpha')">
-    Name
-  </label>
+    <label class="sort-label">
+      <input type="radio" name="sortMode" value="alpha" checked
+             onchange="handleSortChange('alpha')">
+      Name
+    </label>
 
-  <label class="sort-label">
-    <input type="radio" name="sortMode" value="freq"
-           onchange="handleSortChange('freq')">
-    Frequency
-  </label>
-</div>
-
+    <label class="sort-label">
+      <input type="radio" name="sortMode" value="freq"
+             onchange="handleSortChange('freq')">
+      Frequency
+    </label>
+  </div>
 
   <main>
     <section class="shortcuts-section">
       <div id="shortcutContainer" class="shortcut-grid"></div>
     </section>
   </main>
-
-  <footer class="bottom-bar" id="bottomBar">
-    <!-- Action buttons injected dynamically when user is selected -->
-  </footer>
 
   <!-- User Profile Selector Bar -->
   <div class="user-profile-bar">

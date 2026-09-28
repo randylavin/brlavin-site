@@ -1,0 +1,481 @@
+/* -------------------------------------------------- */
+/* GLOBAL LAYOUT & THEME */
+/* -------------------------------------------------- */
+
+:root {
+  --bg-gradient-top: #1f2a44;
+  --bg-gradient-bottom: #3a4f6b;
+  --surface: rgba(255, 255, 255, 0.1);
+  --surface-strong: rgba(255, 255, 255, 0.2);
+  --text-light: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.75);
+  --accent: #4cc3ff;
+  --danger: #e74c3c;
+  --radius-small: 6px;
+  --radius-medium: 12px;
+  --radius-large: 24px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --font-small: 16px;
+  --font-medium: 20px;
+  --font-large: 28px;
+  --font-xlarge: 36px;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  color: var(--text-light);
+  background: linear-gradient(to bottom, var(--bg-gradient-top), var(--bg-gradient-bottom));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* -------------------------------------------------- */
+/* TOP BAR */
+/* -------------------------------------------------- */
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-5) var(--space-6);
+  font-size: var(--font-xlarge);
+}
+
+.top-bar__left-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top-bar__date, .top-bar__clock {
+  text-align: center;
+}
+
+.top-bar__temp {
+  text-align: center;
+  font-size: var(--font-xlarge);
+}
+
+.temp-value {
+  font-weight: bold;
+}
+
+.temp-location {
+  font-size: inherit;
+  color: var(--text-dim);
+}
+
+/* -------------------------------------------------- */
+/* SEARCH BAR */
+/* -------------------------------------------------- */
+
+.search-section {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  align-self: center;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: var(--radius-pill);
+  width: min(800px, 95%);
+  height: 64px;
+  overflow: hidden;
+}
+
+.search-bar__icon-left {
+  padding-left: var(--space-4);
+  display: flex;
+  align-items: center;
+}
+
+.search-bar__icon-left img {
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+}
+
+.search-bar__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: var(--font-large);
+  padding: var(--space-4);
+  color: #333;
+}
+
+.search-bar__button {
+  background: var(--accent);
+  border: none;
+  width: 80px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.search-bar__button img {
+  width: 32px;
+  height: 32px;
+  filter: brightness(0) invert(1);
+}
+
+/* -------------------------------------------------- */
+/* CATEGORY PILLS */
+/* -------------------------------------------------- */
+
+.category-nav {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+  padding: 0 var(--space-6);
+}
+
+.category-pill {
+  background: var(--surface);
+  color: var(--text-light);
+  border: none;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-small);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.category-pill:hover {
+  background: var(--surface-strong);
+}
+
+.category-pill.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: bold;
+}
+
+/* -------------------------------------------------- */
+/* SORT CONTROLS */
+/* -------------------------------------------------- */
+
+.sort-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-3);
+  font-size: var(--font-small);
+  color: var(--text-dim);
+}
+
+.sort-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sort-label:hover {
+  color: var(--text-light);
+}
+
+.sort-label input {
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* -------------------------------------------------- */
+/* SHORTCUT GRID & BADGES */
+/* -------------------------------------------------- */
+
+.shortcuts-section {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-7);
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--space-6);
+  width: min(1700px, 90%);
+}
+
+.shortcut {
+  text-align: center;
+  position: relative;
+}
+
+.shortcut-link {
+  display: block;
+  text-decoration: none;
+  color: var(--text-light);
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.shortcut-icon {
+  width: 90px;
+  height: 90px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+}
+
+.shortcut-icon img {
+  width: 60px;
+  height: 60px;
+}
+
+.click-badge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  background: var(--accent);
+  color: #000;
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  z-index: 5;
+}
+
+.shortcut-label {
+  margin-top: var(--space-2);
+  font-size: var(--font-medium);
+}
+
+/* Add Shortcut Tile Styling */
+.shortcut-icon.add-shortcut-icon {
+  background: var(--surface);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.shortcut-icon.add-shortcut-icon:hover {
+  background: var(--surface-strong);
+  transform: scale(1.08);
+}
+
+/* -------------------------------------------------- */
+/* USER PROFILE BAR */
+/* -------------------------------------------------- */
+
+.user-profile-bar {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  font-size: var(--font-small);
+  color: var(--text-dim);
+}
+
+.user-profile-bar select {
+  background: var(--surface);
+  color: var(--text-light);
+  border: 1px solid var(--surface-strong);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-small);
+  cursor: pointer;
+  outline: none;
+}
+
+.user-profile-bar select option {
+  background: #1f2a44;
+  color: #fff;
+}
+
+/* -------------------------------------------------- */
+/* SPINNER & MODALS */
+/* -------------------------------------------------- */
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 4px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+}
+
+.modal {
+  background: #ffffff;
+  color: #000;
+  padding: var(--space-5);
+  border-radius: var(--radius-medium);
+  width: min(600px, 90%);
+  font-size: var(--font-medium);
+  z-index: 9999;
+}
+
+.modal h3 { margin-top: 0; margin-bottom: var(--space-4); font-size: var(--font-large); }
+.modal label { font-weight: bold; margin-bottom: var(--space-2); display: block; }
+.modal input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3);
+  font-size: var(--font-medium);
+  border: 2px solid #ccc;
+  border-radius: var(--radius-small);
+  margin-bottom: var(--space-4);
+}
+
+/* Modal Icon Studio Row */
+.modal-icon-studio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-bottom: var(--space-3);
+}
+
+.modal-icon-studio__controls {
+  flex: 1;
+}
+
+.modal-icon-studio__controls label {
+  margin-bottom: var(--space-1);
+}
+
+.modal-icon-studio__controls input {
+  margin-bottom: var(--space-2);
+}
+
+.modal-icon-studio__buttons {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.modal button.find-logo-btn {
+  background: var(--accent);
+  color: #000;
+  font-weight: bold;
+  white-space: nowrap;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-small);
+}
+
+.modal button.find-logo-btn:hover {
+  background: #73d2ff;
+}
+
+.modal button.reset-icon-btn {
+  background: #e2e8f0;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-small);
+}
+
+.modal button.reset-icon-btn:hover {
+  background: #cbd5e1;
+}
+
+.modal-divider {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: var(--space-4) 0;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-4);
+}
+
+.modal-buttons__left {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.modal button {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--font-medium);
+  border: none;
+  border-radius: var(--radius-small);
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+.modal button:hover { background: #555; }
+.modal button.btn-cancel {
+  background: #e2e8f0;
+  color: #333;
+}
+.modal button.btn-cancel:hover {
+  background: #cbd5e1;
+}
+.modal button.danger { background: var(--danger); }
+.modal button.danger:hover { background: #ff6b5a; }
+
+/* FLOATING NEW TAB BUTTON */
+.new-tab-floater {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  transition: opacity 0.2s ease;
+  padding: 0;
+}
+
+.new-tab-floater svg {
+  width: 24px;
+  height: 24px;
+  fill: #ffffff;
+  opacity: 0.35;
+}
+
+.new-tab-floater:hover svg {
+  opacity: 0.8;
+}

@@ -13,7 +13,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const USER_STORAGE_KEY = 'dashboardActiveUser';
 let activeUser = localStorage.getItem(USER_STORAGE_KEY) || ''; // Starts blank if no user selected yet
 let shortcuts = [];
-let mode = 'normal'; // "normal" | "edit" | "delete"
 let activeCategory = 'All';
 let currentSortMode = 'alpha'; // "alpha" | "freq"
 
@@ -99,11 +98,9 @@ async function handleUserChange(newUserName) {
   } else {
     localStorage.removeItem(USER_STORAGE_KEY);
   }
-  exitModes();
   await loadShortcuts();
   renderCategoryPills();
   renderShortcuts();
-  renderBottomBar();
 }
 
 // --------------------------------------------------
@@ -241,7 +238,7 @@ function buildFaviconUrl(domain) {
 // GENERIC SAVE HANDLER FOR SHORTCUTS
 // --------------------------------------------------
 
-async function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId) {
+async function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryInputId, iconInputId = null) {
   if (!activeUser) {
     alert("Please select your user profile first.");
     return;
@@ -250,6 +247,7 @@ async function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryI
   const nameInput = document.getElementById(titleInputId);
   const urlInput = document.getElementById(urlInputId);
   const categoryInput = document.getElementById(categoryInputId);
+  const iconInput = iconInputId ? document.getElementById(iconInputId) : null;
 
   if (!nameInput || !urlInput || !categoryInput) {
     alert("Something went wrong — the input fields weren't found.");
@@ -272,7 +270,11 @@ async function saveShortcutFromInputs(index, titleInputId, urlInputId, categoryI
   }
 
   const { url, domain } = result;
-  const icon = buildFaviconUrl(domain);
+
+  // Use custom icon if provided, otherwise default to Google favicon
+  let icon = (iconInput && iconInput.value.trim())
+    ? iconInput.value.trim()
+    : buildFaviconUrl(domain);
 
   if (index === null || index === undefined) {
     await saveNewShortcutToDb({ name, url, icon, category, clicks: 0 });
@@ -366,49 +368,6 @@ function renderShortcuts() {
       ? `<div class="click-badge">${item.clicks || 0}</div>` 
       : '';
 
-    if (mode === 'edit') {
-      wrapper.innerHTML = `
-        <div class="edit-pencil">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="#ffffff">
-            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
-          </svg>
-        </div>
-        <a class="shortcut-link" href="javascript:void(0);">
-          <div class="shortcut-icon">
-            <img src="${item.icon}" alt="${item.name}">
-            ${badgeHtml}
-          </div>
-          <div class="shortcut-label">${item.name}</div>
-        </a>
-      `;
-
-      wrapper.addEventListener('click', () => openEditIconModal(item.originalIndex));
-      container.appendChild(wrapper);
-      return;
-    }
-
-    if (mode === 'delete') {
-      wrapper.innerHTML = `
-        <div class="delete-x">X</div>
-        <a class="shortcut-link" href="javascript:void(0);">
-          <div class="shortcut-icon">
-            <img src="${item.icon}" alt="${item.name}">
-            ${badgeHtml}
-          </div>
-          <div class="shortcut-label">${item.name}</div>
-        </a>
-      `;
-
-      const deleteBadge = wrapper.querySelector('.delete-x');
-      deleteBadge.addEventListener('click', (e) => {
-        e.stopPropagation();
-        confirmDelete(item.originalIndex);
-      });
-
-      container.appendChild(wrapper);
-      return;
-    }
-
     wrapper.innerHTML = `
       <a class="shortcut-link" href="javascript:void(0);">
         <div class="shortcut-icon">
@@ -419,7 +378,52 @@ function renderShortcuts() {
       </a>
     `;
 
+    // Mobile touch handling (long-press)
+    let touchTimer = null;
+    let didLongPress = false;
+
+    wrapper.addEventListener('touchstart', () => {
+      didLongPress = false;
+      touchTimer = setTimeout(() => {
+        didLongPress = true;
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+        openEditOrShareModal(item.originalIndex);
+      }, 500);
+    }, { passive: true });
+
+    wrapper.addEventListener('touchmove', () => {
+      if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+      }
+    }, { passive: true });
+
+    wrapper.addEventListener('touchend', (e) => {
+      if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+      }
+      if (didLongPress) {
+        e.preventDefault();
+      }
+    });
+
+    wrapper.addEventListener('touchcancel', () => {
+      if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+      }
+    });
+
+    // Standard click handling (with long-press guard)
     wrapper.addEventListener('click', async () => {
+      if (didLongPress) {
+        didLongPress = false;
+        return;
+      }
+
       const liveItem = shortcuts[item.originalIndex];
       liveItem.clicks = (liveItem.clicks || 0) + 1;
       await updateShortcutInDb(item.originalIndex, { clicks: liveItem.clicks });
@@ -430,6 +434,7 @@ function renderShortcuts() {
       window.open(item.url, "_blank");
     });
 
+    // Desktop right-click
     wrapper.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       openEditOrShareModal(item.originalIndex);
@@ -437,65 +442,32 @@ function renderShortcuts() {
 
     container.appendChild(wrapper);
   });
-}
 
-// --------------------------------------------------
-// BOTTOM BAR
-// --------------------------------------------------
-
-function renderBottomBar() {
-  const bar = document.getElementById('bottomBar');
-  if (!bar) return;
-
-  if (!activeUser) {
-    bar.innerHTML = ''; // Hide buttons if no profile selected
-    return;
-  }
-
-  if (mode === 'edit' || mode === 'delete') {
-    bar.innerHTML = `<button id="doneButton" onclick="exitModes()">DONE</button>`;
-    return;
-  }
-
-  bar.innerHTML = `
-    <button class="bottom-button add-button" aria-label="Add Shortcut" onclick="openNewShortcutModal()">
-      <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
-      </svg>
-    </button>
-    <button class="bottom-button edit-button" aria-label="Edit Shortcuts" onclick="enterEditMode()">
-      <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-      </svg>
-    </button>
-    <button class="bottom-button delete-button" aria-label="Delete Shortcuts" onclick="enterDeleteMode()">
-      <svg viewBox="0 0 24 24">
-        <path fill="#ffffff" d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5c-.1.8-.8 1.5-1.6 1.5H8.1c-.8 0-1.5-.7-1.6-1.5L5 9zm5 2v9h2v-9H8zm4 0v9h2v-9h-2zM9 4V2h6v2h5v2H4V4h5z"/>
-      </svg>
-    </button>
+  // Always append "Add Shortcut" as the last tile in the grid
+  const addWrapper = document.createElement('div');
+  addWrapper.className = 'shortcut';
+  addWrapper.innerHTML = `
+    <a class="shortcut-link" href="javascript:void(0);" aria-label="Add Shortcut">
+      <div class="shortcut-icon add-shortcut-icon">
+        <svg viewBox="0 0 24 24" width="52" height="52">
+          <path fill="#ffffff" d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
+        </svg>
+      </div>
+      <div class="shortcut-label">Add Shortcut</div>
+    </a>
   `;
-}
 
-// --------------------------------------------------
-// MODE CONTROL
-// --------------------------------------------------
+  addWrapper.addEventListener('click', (e) => {
+    e.preventDefault();
+    openNewShortcutModal();
+  });
 
-function enterDeleteMode() {
-  mode = 'delete';
-  renderShortcuts();
-  renderBottomBar();
-}
+  // Disable right-click modal on the Add Shortcut tile
+  addWrapper.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  });
 
-function enterEditMode() {
-  mode = 'edit';
-  renderShortcuts();
-  renderBottomBar();
-}
-
-function exitModes() {
-  mode = 'normal';
-  renderShortcuts();
-  renderBottomBar();
+  container.appendChild(addWrapper);
 }
 
 // --------------------------------------------------
@@ -510,8 +482,10 @@ function confirmDelete(index) {
     <h3>Delete Shortcut</h3>
     <p>Are you sure you want to delete "<strong>${item.name}</strong>"?</p>
     <div class="modal-buttons">
-      <button onclick="performDelete(${index})" class="danger">Delete</button>
-      <button onclick="closeAllModals()">Cancel</button>
+      <div class="modal-buttons__left">
+        <button onclick="performDelete(${index})" class="danger">Delete</button>
+        <button onclick="closeAllModals()" class="btn-cancel">Cancel</button>
+      </div>
     </div>
   `;
 }
@@ -561,26 +535,6 @@ function getCategoryDataList() {
 // EDIT & SHARE MODALS
 // --------------------------------------------------
 
-function openEditIconModal(index) {
-  const item = shortcuts[index];
-  const { modal } = createModalShell();
-
-  modal.innerHTML = `
-    <h3>Edit Shortcut</h3>
-    <label>Title:</label>
-    <input type="text" id="editIconTitle" value="${item.name}">
-    <label>URL:</label>
-    <input type="text" id="editIconURL" value="${item.url}">
-    <label>Category:</label>
-    <input type="text" id="editIconCategory" value="${item.category || ''}" list="categoryList">
-    ${getCategoryDataList()}
-    <div class="modal-buttons">
-      <button onclick="saveEditIcon(${index})">Save</button>
-      <button onclick="closeAllModals()">Cancel</button>
-    </div>
-  `;
-}
-
 function openEditOrShareModal(index) {
   const item = shortcuts[index];
   const { modal } = createModalShell();
@@ -594,7 +548,7 @@ function openEditOrShareModal(index) {
       buttons += `<button onclick="copyShortcutToUser(${index}, '${targetUser}')" style="margin-right: 8px; background: #2980b9;">Copy to ${targetUser}</button>`;
     });
     shareOptionsHtml = `
-      <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+      <hr class="modal-divider">
       <label>Share / Copy to another user's stash:</label>
       <div style="margin-top: 8px;">${buttons}</div>
     `;
@@ -602,19 +556,83 @@ function openEditOrShareModal(index) {
 
   modal.innerHTML = `
     <h3>Edit Shortcut</h3>
-    <label>Title:</label>
+
+    <div class="modal-icon-studio">
+      <div class="shortcut-icon" style="box-shadow: 0 2px 8px rgba(0,0,0,0.15); flex-shrink: 0;">
+        <img id="editIconPreview" src="${item.icon}" alt="${item.name}">
+      </div>
+      <div class="modal-icon-studio__controls">
+        <label for="editIconUrl">Icon Image:</label>
+        <input type="text" id="editIconUrl" value="${item.icon || ''}" placeholder="Custom image URL...">
+        <div class="modal-icon-studio__buttons">
+          <button type="button" id="findLogoBtn" class="find-logo-btn">🔍 Find Logo</button>
+          <button type="button" id="resetIconBtn" class="reset-icon-btn">↺ Reset to Default</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="modal-divider">
+
+    <label for="editTitle">Title:</label>
     <input type="text" id="editTitle" value="${item.name}">
-    <label>URL:</label>
+
+    <label for="editURL">URL:</label>
     <input type="text" id="editURL" value="${item.url}">
-    <label>Category:</label>
+
+    <label for="editCategory">Category:</label>
     <input type="text" id="editCategory" value="${item.category || ''}" list="categoryList">
     ${getCategoryDataList()}
+
     <div class="modal-buttons">
-      <button onclick="saveEdit(${index})">Save</button>
-      <button onclick="deleteShortcutAndRefresh(${index})" class="danger">Delete</button>
+      <div class="modal-buttons__left">
+        <button onclick="saveEdit(${index})">Save</button>
+        <button type="button" onclick="closeAllModals()" class="btn-cancel">Cancel</button>
+      </div>
+      <button onclick="confirmDelete(${index})" class="danger">Delete</button>
     </div>
+
     ${shareOptionsHtml}
   `;
+
+  // Live preview, logo search & reset listeners
+  const previewImg = modal.querySelector('#editIconPreview');
+  const iconInput = modal.querySelector('#editIconUrl');
+  const urlInput = modal.querySelector('#editURL');
+  const titleInput = modal.querySelector('#editTitle');
+  const findLogoBtn = modal.querySelector('#findLogoBtn');
+  const resetIconBtn = modal.querySelector('#resetIconBtn');
+
+  function getDefaultFavicon() {
+    const raw = urlInput ? urlInput.value.trim() : item.url;
+    const res = validateAndPrepareUrl(raw);
+    return res.success ? buildFaviconUrl(res.domain) : item.icon;
+  }
+
+  if (iconInput && previewImg) {
+    iconInput.addEventListener('input', () => {
+      const val = iconInput.value.trim();
+      previewImg.src = val ? val : getDefaultFavicon();
+    });
+
+    previewImg.addEventListener('error', () => {
+      previewImg.src = getDefaultFavicon();
+    });
+  }
+
+  if (resetIconBtn && iconInput && previewImg) {
+    resetIconBtn.addEventListener('click', () => {
+      iconInput.value = '';
+      previewImg.src = getDefaultFavicon();
+    });
+  }
+
+  if (findLogoBtn && titleInput) {
+    findLogoBtn.addEventListener('click', () => {
+      const query = titleInput.value.trim() || item.name;
+      const searchUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query + ' logo icon')}`;
+      window.open(searchUrl, '_blank');
+    });
+  }
 }
 
 async function copyShortcutToUser(index, targetUser) {
@@ -647,19 +665,13 @@ async function copyShortcutToUser(index, targetUser) {
   }
 }
 
-async function deleteShortcutAndRefresh(index) {
-  await deleteShortcutFromDb(index);
-  renderCategoryPills();
-  renderShortcuts();
-  closeAllModals();
-}
-
 // --------------------------------------------------
 // NEW SHORTCUT MODAL
 // --------------------------------------------------
 
 function openNewShortcutModal() {
   const { modal } = createModalShell();
+  const defaultCategory = (activeCategory && activeCategory !== 'All') ? activeCategory : '';
 
   modal.innerHTML = `
     <h3>New Shortcut</h3>
@@ -668,11 +680,13 @@ function openNewShortcutModal() {
     <label>URL:</label>
     <input type="text" id="newURL">
     <label>Category:</label>
-    <input type="text" id="newCategory" placeholder="e.g. Games, Finance" list="categoryList">
+    <input type="text" id="newCategory" value="${defaultCategory}" placeholder="e.g. Games, Finance" list="categoryList">
     ${getCategoryDataList()}
     <div class="modal-buttons">
-      <button onclick="saveNewShortcut()">Save</button>
-      <button onclick="closeAllModals()">Cancel</button>
+      <div class="modal-buttons__left">
+        <button onclick="saveNewShortcut()">Save</button>
+        <button onclick="closeAllModals()" class="btn-cancel">Cancel</button>
+      </div>
     </div>
   `;
 }
@@ -686,11 +700,7 @@ function saveNewShortcut() {
 }
 
 function saveEdit(index) {
-  saveShortcutFromInputs(index, 'editTitle', 'editURL', 'editCategory');
-}
-
-function saveEditIcon(index) {
-  saveShortcutFromInputs(index, 'editIconTitle', 'editIconURL', 'editIconCategory');
+  saveShortcutFromInputs(index, 'editTitle', 'editURL', 'editCategory', 'editIconUrl');
 }
 
 // --------------------------------------------------
@@ -742,7 +752,6 @@ async function initialize() {
   
   renderCategoryPills();
   renderShortcuts();
-  renderBottomBar();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
